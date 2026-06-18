@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pet Adoption Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="nav-container">
+            <a class="logo" href="/">Pet Adoption System</a>
+
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/knowledge">Pet Care</a>
+                <a href="/adoption">Adoption Center</a>
+                <a href="/team">Our Team</a>
+            </nav>
+
+            <div class="auth-buttons">
+                <a class="auth-btn" href="/login">Register / Login</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Pet Adoption Management System. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-header">
+    <h2>Adoption Center</h2>
+    <p>Browse pets currently waiting for a new home.</p>
+</section>
+
+<section class="pet-grid">
+    {% for pet in pets %}
+    <div class="pet-card">
+        <h3>{{ pet.name }}</h3>
+        <p><strong>Species:</strong> {{ pet.species }}</p>
+        <p><strong>Breed:</strong> {{ pet.breed }}</p>
+        <p><strong>Age:</strong> {{ pet.age }} years old</p>
+        <p><strong>Gender:</strong> {{ pet.gender }}</p>
+        <p><strong>Status:</strong> {{ pet.status }}</p>
+
+        <a class="button" href="#">View Details</a>
+    </div>
+    {% endfor %}
+</section>
+{% endblock %}

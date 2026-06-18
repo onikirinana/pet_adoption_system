@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="form-card">
+    <h2>User Registration</h2>
+
+    <form>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username">
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email">
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password">
+
+        <button class="button" type="submit">Register</button>
+    </form>
+
+    <p class="form-tip">
+        Already have an account? <a href="/login">Back to login</a>
+    </p>
+</section>
+{% endblock %}
