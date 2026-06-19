@@ -322,3 +322,254 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+.pet-care-page {
+    background-color: #ffffff;
+    padding: 70px 40px;
+}
+
+.care-welcome {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.care-welcome h1 {
+    font-size: 48px;
+    font-style: italic;
+    font-weight: 500;
+    color: #111;
+    margin: 0;
+}
+
+.care-intro {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 70px;
+    align-items: center;
+}
+
+.care-image img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    display: block;
+}
+
+.care-text {
+    color: #555;
+}
+
+.care-subtitle {
+    font-size: 26px;
+    margin: 0;
+    color: #555;
+}
+
+.care-text h2 {
+    font-size: 34px;
+    margin: 8px 0 18px;
+    color: #f0645f;
+    font-weight: 600;
+}
+
+.care-text p {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #666;
+}
+
+.care-list {
+    list-style: none;
+    padding: 0;
+    margin: 28px 0;
+}
+
+.care-list li {
+    margin-bottom: 16px;
+    font-size: 16px;
+    color: #777;
+    position: relative;
+    padding-left: 34px;
+}
+
+.care-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: -2px;
+    color: #f0645f;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.care-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.dark-btn {
+    display: inline-block;
+    background-color: #000;
+    color: #fff;
+    padding: 14px 30px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: 0.2s ease;
+}
+
+.dark-btn:hover {
+    background-color: #12b9c5;
+}
+
+.gallery-title {
+    text-align: center;
+    margin: 80px 0 40px;
+}
+
+.gallery-title h2 {
+    font-size: 52px;
+    font-style: italic;
+    font-weight: 400;
+    margin: 0;
+}
+
+.care-gallery {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.gallery-card {
+    background-color: #fff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.gallery-card img {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    display: block;
+}
+
+.gallery-card h3 {
+    margin: 18px 0;
+    font-size: 20px;
+    color: #333;
+}
+
+/* Popup Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.68);
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+}
+
+.tip-modal {
+    position: relative;
+    width: 640px;
+    max-width: 95%;
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 34px 38px 40px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    text-align: center;
+}
+
+.tip-modal h2 {
+    font-size: 38px;
+    letter-spacing: 8px;
+    color: #f0645f;
+    font-weight: 400;
+    margin: 0 0 24px;
+}
+
+.tip-modal img {
+    width: 100%;
+    height: 360px;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.tip-modal p {
+    text-align: left;
+    color: #777;
+    font-size: 16px;
+    line-height: 1.8;
+    margin: 0;
+}
+
+.modal-close {
+    position: absolute;
+    right: 16px;
+    top: 12px;
+    border: none;
+    background: transparent;
+    color: #777;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: #f0645f;
+}
+
+@media (max-width: 900px) {
+    .care-intro {
+        grid-template-columns: 1fr;
+        gap: 35px;
+    }
+
+    .care-gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .care-welcome h1 {
+        font-size: 40px;
+    }
+
+    .gallery-title h2 {
+        font-size: 42px;
+    }
+}
+
+@media (max-width: 600px) {
+    .pet-care-page {
+        padding: 50px 22px;
+    }
+
+    .care-gallery {
+        grid-template-columns: 1fr;
+    }
+
+    .care-buttons {
+        flex-direction: column;
+    }
+
+    .tip-modal {
+        padding: 28px 24px 32px;
+    }
+
+    .tip-modal h2 {
+        font-size: 30px;
+        letter-spacing: 4px;
+    }
+
+    .tip-modal img {
+        height: 260px;
+    }
+}
