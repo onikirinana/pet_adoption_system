@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="auth-container">
+        <div class="auth-intro">
+            <p class="auth-tag">WELCOME BACK</p>
+            <h1>Login to Your Account</h1>
+            <p>
+                Sign in to manage your adoption applications, view pet details,
+                and continue your journey toward giving a pet a loving home.
+            </p>
+
+            <div class="auth-highlights">
+                <div>
+                    <strong>Adoption Records</strong>
+                    <span>Track your submitted applications.</span>
+                </div>
+
+                <div>
+                    <strong>Pet Profiles</strong>
+                    <span>Save and review pet information easily.</span>
+                </div>
+
+                <div>
+                    <strong>Safe Process</strong>
+                    <span>Keep your adoption information organized.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-card">
+            <h2>Login</h2>
+            <p class="auth-subtitle">Enter your details to continue.</p>
+
+            <form>
+                <div class="auth-form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+
+                <div class="auth-options">
+                    <label class="remember-me">
+                        <input type="checkbox">
+                        Remember me
+                    </label>
+
+                    <a href="#">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="auth-submit-btn">Login</button>
+            </form>
+
+            <p class="auth-switch">
+                Don't have an account?
+                <a href="{{ url_for('register') }}">Register now</a>
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}
