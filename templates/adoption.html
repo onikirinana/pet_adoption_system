@@ -1,23 +1,46 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="page-header">
-    <h2>Adoption Center</h2>
-    <p>Browse pets currently waiting for a new home.</p>
-</section>
+<section class="adoption-page">
+    <div class="adoption-decor adoption-decor-left">🐱</div>
+    <div class="adoption-decor adoption-decor-right">🐶</div>
 
-<section class="pet-grid">
-    {% for pet in pets %}
-    <div class="pet-card">
-        <h3>{{ pet.name }}</h3>
-        <p><strong>Species:</strong> {{ pet.species }}</p>
-        <p><strong>Breed:</strong> {{ pet.breed }}</p>
-        <p><strong>Age:</strong> {{ pet.age }} years old</p>
-        <p><strong>Gender:</strong> {{ pet.gender }}</p>
-        <p><strong>Status:</strong> {{ pet.status }}</p>
-
-        <a class="button" href="#">View Details</a>
+    <div class="adoption-title">
+        <h1>Adoption Center</h1>
+        <p>Meet pets who are currently waiting for a loving home.</p>
     </div>
-    {% endfor %}
+
+    <div class="adoption-grid">
+        {% for pet in pets %}
+        <div class="adoption-card">
+            <a href="{{ url_for('pet_detail', pet_id=pet.id) }}" class="pet-avatar-link">
+                <img src="{{ url_for('static', filename=pet.image) }}" alt="{{ pet.name }}" class="pet-avatar">
+            </a>
+
+            <h2>{{ pet.name }}</h2>
+
+            <div class="pet-summary-box">
+                <p>{{ pet.short_description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('adoption', page=page-1) }}">Previous</a>
+        {% endif %}
+
+        {% for page_num in range(1, total_pages + 1) %}
+        {% if page_num == page %}
+        <span class="active-page">{{ page_num }}</span>
+        {% else %}
+        <a href="{{ url_for('adoption', page=page_num) }}">{{ page_num }}</a>
+        {% endif %}
+        {% endfor %}
+
+        {% if page < total_pages %} <a href="{{ url_for('adoption', page=page+1) }}">Next</a>
+            {% endif %}
+    </div>
 </section>
 {% endblock %}

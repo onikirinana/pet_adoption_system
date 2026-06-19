@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="pet-detail-page">
+    <div class="pet-detail-card">
+        <div class="pet-detail-image">
+            <img src="{{ url_for('static', filename=pet.image) }}" alt="{{ pet.name }}">
+        </div>
+
+        <div class="pet-detail-info">
+            <p class="detail-tag">{{ pet.species }}</p>
+            <h1>{{ pet.name }}</h1>
+
+            <div class="detail-info-grid">
+                <div>
+                    <span>Birthday</span>
+                    <strong>{{ pet.birthday }}</strong>
+                </div>
+
+                <div>
+                    <span>Breed</span>
+                    <strong>{{ pet.breed }}</strong>
+                </div>
+
+                <div>
+                    <span>Gender</span>
+                    <strong>{{ pet.gender }}</strong>
+                </div>
+
+                <div>
+                    <span>Vaccinated</span>
+                    <strong>{{ pet.vaccinated }}</strong>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>About {{ pet.name }}</h3>
+                <p>{{ pet.description }}</p>
+            </div>
+
+            <div class="detail-section">
+                <h3>Lost / Found Location</h3>
+                <p>{{ pet.lost_location }}</p>
+            </div>
+
+            <div class="detail-section">
+                <h3>Personality</h3>
+                <p>{{ pet.personality }}</p>
+            </div>
+
+            <div class="detail-section">
+                <h3>Health Status</h3>
+                <p>{{ pet.health_status }}</p>
+            </div>
+
+            <div class="detail-actions">
+                <a href="#" class="adopt-btn">I Want to Adopt</a>
+                <a href="{{ url_for('adoption') }}" class="back-btn">Back to Center</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

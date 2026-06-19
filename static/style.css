@@ -573,3 +573,285 @@ footer {
         height: 260px;
     }
 }
+
+/* Adoption Center Page */
+.adoption-page {
+    position: relative;
+    background-color: #ffffff;
+    min-height: 80vh;
+    padding: 70px 40px 80px;
+    overflow: hidden;
+}
+
+.adoption-title {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.adoption-title h1 {
+    font-size: 48px;
+    font-style: italic;
+    font-weight: 500;
+    margin: 0 0 12px;
+    color: #111;
+}
+
+.adoption-title p {
+    font-size: 18px;
+    color: #666;
+}
+
+.adoption-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+}
+
+.adoption-card {
+    text-align: center;
+}
+
+.pet-avatar-link {
+    display: inline-block;
+    text-decoration: none;
+}
+
+.pet-avatar {
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 6px solid #ff665c;
+    box-shadow: 0 0 0 8px #f2f2f2;
+    transition: 0.25s ease;
+}
+
+.pet-avatar:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 0 0 8px #f2f2f2, 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.adoption-card h2 {
+    font-size: 32px;
+    margin: 34px 0 18px;
+    color: #222;
+}
+
+.pet-summary-box {
+    min-height: 110px;
+    padding: 26px 28px;
+    border: 1px solid #eeeeee;
+    color: #777;
+    line-height: 1.8;
+    background-color: white;
+}
+
+.pet-summary-box p {
+    margin: 0;
+}
+
+.pagination {
+    margin-top: 60px;
+    text-align: center;
+}
+
+.pagination a,
+.pagination span {
+    display: inline-block;
+    min-width: 40px;
+    padding: 10px 14px;
+    margin: 0 4px;
+    border: 1px solid #d9e1e8;
+    text-decoration: none;
+    color: #2f80c9;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.pagination a:hover {
+    background-color: #12b9c5;
+    color: white;
+}
+
+.pagination .active-page {
+    background-color: #2f80c9;
+    color: white;
+    border-color: #2f80c9;
+}
+
+.adoption-decor {
+    position: absolute;
+    font-size: 110px;
+    opacity: 0.14;
+    pointer-events: none;
+}
+
+.adoption-decor-left {
+    left: 50px;
+    top: 50px;
+}
+
+.adoption-decor-right {
+    right: 60px;
+    top: 55px;
+}
+
+/* Pet Detail Page */
+.pet-detail-page {
+    background-color: #f7f9fb;
+    padding: 70px 40px;
+    min-height: 80vh;
+}
+
+.pet-detail-card {
+    max-width: 1150px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 18px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 430px 1fr;
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.1);
+}
+
+.pet-detail-image img {
+    width: 100%;
+    height: 100%;
+    min-height: 620px;
+    object-fit: cover;
+    display: block;
+}
+
+.pet-detail-info {
+    padding: 48px;
+}
+
+.detail-tag {
+    display: inline-block;
+    background-color: #12b9c5;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-weight: 700;
+    margin: 0 0 16px;
+}
+
+.pet-detail-info h1 {
+    font-size: 48px;
+    margin: 0 0 26px;
+    color: #222;
+}
+
+.detail-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-bottom: 34px;
+}
+
+.detail-info-grid div {
+    background-color: #f7f9fb;
+    padding: 18px;
+    border-radius: 12px;
+}
+
+.detail-info-grid span {
+    display: block;
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 8px;
+}
+
+.detail-info-grid strong {
+    color: #222;
+    font-size: 17px;
+}
+
+.detail-section {
+    margin-bottom: 24px;
+}
+
+.detail-section h3 {
+    color: #12b9c5;
+    margin-bottom: 8px;
+    font-size: 22px;
+}
+
+.detail-section p {
+    color: #666;
+    line-height: 1.8;
+    margin: 0;
+}
+
+.detail-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 34px;
+}
+
+.adopt-btn,
+.back-btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 800;
+}
+
+.adopt-btn {
+    background-color: #12b9c5;
+    color: white;
+}
+
+.adopt-btn:hover {
+    background-color: #0fa3ad;
+}
+
+.back-btn {
+    background-color: #111;
+    color: white;
+}
+
+.back-btn:hover {
+    background-color: #333;
+}
+
+@media (max-width: 1000px) {
+    .adoption-grid {
+        grid-template-columns: 1fr;
+        gap: 60px;
+    }
+
+    .pet-detail-card {
+        grid-template-columns: 1fr;
+    }
+
+    .pet-detail-image img {
+        min-height: 420px;
+    }
+}
+
+@media (max-width: 600px) {
+    .adoption-title h1 {
+        font-size: 38px;
+    }
+
+    .pet-avatar {
+        width: 190px;
+        height: 190px;
+    }
+
+    .pet-detail-info {
+        padding: 30px;
+    }
+
+    .detail-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-actions {
+        flex-direction: column;
+    }
+}
