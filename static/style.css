@@ -1198,3 +1198,218 @@ footer {
         align-items: flex-start;
     }
 }
+
+/* Simple Login / Register Modal Pages */
+.auth-modal-page {
+    min-height: 80vh;
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.62)),
+        url("/static/images/hero.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+.auth-modal-backdrop {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 30px;
+}
+
+.auth-simple-modal {
+    position: relative;
+    width: 760px;
+    max-width: 95%;
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+}
+
+.auth-modal-close {
+    position: absolute;
+    right: 22px;
+    top: 18px;
+    color: #bbb;
+    font-size: 26px;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.auth-modal-close:hover {
+    color: #12b9c5;
+}
+
+.auth-simple-tabs {
+    display: flex;
+    align-items: flex-end;
+    padding: 48px 36px 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.auth-simple-tab {
+    display: inline-block;
+    padding: 15px 26px;
+    border: 1px solid #e5e5e5;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    color: #7a8a9a;
+    background-color: white;
+    font-size: 26px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-simple-tab.active {
+    color: #2f80c9;
+    background-color: #f7f9fb;
+    border-color: #dfe5eb;
+}
+
+.auth-simple-tab:hover {
+    color: #2f80c9;
+}
+
+/* Login form */
+.simple-login-form {
+    padding: 44px 36px 0;
+}
+
+.simple-login-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 18px;
+    align-items: center;
+    max-width: 560px;
+    margin: 0 auto 22px;
+}
+
+.simple-login-row label {
+    text-align: right;
+    color: #555;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.simple-login-row input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d5dce3;
+    border-radius: 6px;
+    font-size: 15px;
+    outline: none;
+}
+
+/* Register form */
+.simple-register-form {
+    padding: 42px 36px 0;
+}
+
+.simple-register-grid {
+    display: grid;
+    grid-template-columns: 110px 1fr 110px 1fr;
+    gap: 18px;
+    align-items: center;
+}
+
+.simple-register-grid label {
+    color: #555;
+    font-size: 17px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.simple-register-grid input,
+.simple-register-grid select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d5dce3;
+    border-radius: 6px;
+    font-size: 15px;
+    outline: none;
+}
+
+.simple-login-row input:focus,
+.simple-register-grid input:focus,
+.simple-register-grid select:focus {
+    border-color: #12b9c5;
+    box-shadow: 0 0 0 3px rgba(18, 185, 197, 0.15);
+}
+
+.auth-modal-actions {
+    margin-top: 38px;
+    padding: 22px 28px;
+    border-top: 1px solid #eeeeee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.auth-cancel-btn,
+.auth-submit-small {
+    padding: 11px 22px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.auth-cancel-btn {
+    border: 1px solid #cccccc;
+    background-color: white;
+    color: #555;
+}
+
+.auth-cancel-btn:hover {
+    background-color: #f1f3f5;
+}
+
+.auth-submit-small {
+    border: none;
+    background-color: #2f80c9;
+    color: white;
+}
+
+.auth-submit-small:hover {
+    background-color: #1f6fb8;
+}
+
+@media (max-width: 800px) {
+    .auth-simple-tabs {
+        padding: 42px 24px 0;
+    }
+
+    .auth-simple-tab {
+        font-size: 22px;
+        padding: 13px 22px;
+    }
+
+    .simple-login-row,
+    .simple-register-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .simple-login-row label,
+    .simple-register-grid label {
+        text-align: left;
+    }
+
+    .simple-login-form,
+    .simple-register-form {
+        padding: 34px 24px 0;
+    }
+
+    .auth-modal-actions {
+        flex-direction: column;
+    }
+
+    .auth-cancel-btn,
+    .auth-submit-small {
+        width: 100%;
+        text-align: center;
+    }
+}
