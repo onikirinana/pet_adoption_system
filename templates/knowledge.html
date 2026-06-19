@@ -1,18 +1,155 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="content-card">
-    <h2>Pet Care Knowledge</h2>
 
-    <h3>1. What should you consider before adopting a pet?</h3>
-    <p>Before adopting a pet, you should consider your time, financial ability, living environment, and long-term
-        responsibility.</p>
+<div id="careTipModal" class="modal-overlay">
+    <div class="tip-modal">
+        <button class="modal-close" onclick="closeCareTip()">×</button>
 
-    <h3>2. How to help a new pet adapt to your home?</h3>
-    <p>A newly adopted pet may feel nervous at first. Give them a quiet, safe space and allow them to adjust gradually.
-    </p>
+        <h2 id="tipTitle">Pet Care Tip</h2>
 
-    <h3>3. Regular health care</h3>
-    <p>Pets need regular health checks, vaccinations, parasite prevention, proper grooming, and daily care.</p>
+        <img id="tipImage" src="{{ url_for('static', filename='images/tip-cat-safe-space.jpg') }}" alt="Pet care tip">
+
+        <p id="tipText">
+            Pets need patience, love, and regular care.
+        </p>
+    </div>
+</div>
+
+<section class="pet-care-page">
+    <div class="care-welcome">
+        <h1>Welcome</h1>
+    </div>
+
+    <div class="care-intro">
+        <div class="care-image">
+            <img src="{{ url_for('static', filename='images/pet-care-main.jpeg') }}" alt="Cat and dog">
+        </div>
+
+        <div class="care-text">
+            <p class="care-subtitle">A few words about our</p>
+            <h2>Pet Care Life</h2>
+
+            <p>
+                Pets are not only animals. They are loyal friends and family members.
+                When they feel lonely, they need our company. When they are happy,
+                they share their joy with us.
+            </p>
+
+            <ul class="care-list">
+                <li>Pet health and safety</li>
+                <li>Pet grooming and cleaning</li>
+                <li>Pet food and nutrition</li>
+                <li>Pet behaviour and training</li>
+            </ul>
+
+            <div class="care-buttons">
+                <a href="#" class="dark-btn">Cat Care Tips</a>
+                <a href="#" class="dark-btn">Dog Care Tips</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-title">
+        <h2>Gallery</h2>
+    </div>
+
+    <div class="care-gallery">
+        <div class="gallery-card">
+            <img src="{{ url_for('static', filename='images/gallery-cat.jpg') }}" alt="Cat">
+            <h3>Cat Life</h3>
+        </div>
+
+        <div class="gallery-card">
+            <img src="{{ url_for('static', filename='images/gallery-dog.jpg') }}" alt="Dog">
+            <h3>Dog Care</h3>
+        </div>
+
+        <div class="gallery-card">
+            <img src="{{ url_for('static', filename='images/gallery-food.jpg') }}" alt="Pet food">
+            <h3>Healthy Food</h3>
+        </div>
+
+        <div class="gallery-card">
+            <img src="{{ url_for('static', filename='images/gallery-care.jpg') }}" alt="Pet care">
+            <h3>Daily Care</h3>
+        </div>
+    </div>
 </section>
+
+<script>
+    const petCareTips = [
+        {
+            title: "Safe Space for Cats",
+            image: "{{ url_for('static', filename='images/cat-safe-space.jpeg') }}",
+            text: "Cats need a quiet and safe space when they first arrive at a new home. Give them time to explore and adjust slowly."
+        },
+        {
+            title: "Daily Walks for Dogs",
+            image: "{{ url_for('static', filename='images/dog-walk.png') }}",
+            text: "Dogs need regular walks, playtime, and social interaction. Daily exercise helps them stay healthy and happy."
+        },
+        {
+            title: "Healthy Pet Food",
+            image: "{{ url_for('static', filename='images/pet-food.webp') }}",
+            text: "Choose suitable food based on your pet's age, size, and health condition. Clean drinking water should always be available."
+        },
+        {
+            title: "Regular Grooming",
+            image: "{{ url_for('static', filename='images/grooming.webp') }}",
+            text: "Regular grooming helps keep your pet clean and comfortable. Brushing also helps you notice skin problems early."
+        },
+        {
+            title: "Regular Vet Checks",
+            image: "{{ url_for('static', filename='images/vet-check.jpg') }}",
+            text: "Pets should have regular health checks, vaccinations, and parasite prevention to reduce the risk of illness."
+        },
+        {
+            title: "Create a Safe Home",
+            image: "{{ url_for('static', filename='images/safe-home.avif') }}",
+            text: "Keep harmful food, medicine, sharp objects, and small items away from pets to prevent accidents at home."
+        },
+        {
+            title: "Positive Training",
+            image: "{{ url_for('static', filename='images/training.jpeg') }}",
+            text: "Use patience and positive encouragement when training pets. Rewards are usually more effective than punishment."
+        },
+        {
+            title: "Understand Pet Behaviour",
+            image: "{{ url_for('static', filename='images/behaviour.jpg') }}",
+            text: "Changes in appetite, energy, or behaviour may show that a pet is stressed or unwell. Pay attention to small changes."
+        },
+        {
+            title: "Think Before Adoption",
+            image: "{{ url_for('static', filename='images/adoption.webp') }}",
+            text: "Adoption is a long-term responsibility. Before adopting, make sure you have enough time, space, and financial ability."
+        },
+        {
+            title: "Love and Patience",
+            image: "{{ url_for('static', filename='images/love-patience.jpeg') }}",
+            text: "Every pet has a different personality. Building trust takes time, so give them love, patience, and consistent care."
+        }
+    ];
+
+    function showRandomCareTip() {
+        const randomIndex = Math.floor(Math.random() * petCareTips.length);
+        const selectedTip = petCareTips[randomIndex];
+
+        document.getElementById("tipTitle").textContent = selectedTip.title;
+        document.getElementById("tipImage").src = selectedTip.image;
+        document.getElementById("tipImage").alt = selectedTip.title;
+        document.getElementById("tipText").textContent = selectedTip.text;
+
+        document.getElementById("careTipModal").style.display = "flex";
+    }
+
+    function closeCareTip() {
+        document.getElementById("careTipModal").style.display = "none";
+    }
+
+    window.onload = function () {
+        showRandomCareTip();
+    };
+</script>
+
 {% endblock %}
