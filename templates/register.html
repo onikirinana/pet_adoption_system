@@ -1,24 +1,73 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="form-card">
-    <h2>User Registration</h2>
+<section class="auth-page">
+    <div class="auth-container">
+        <div class="auth-intro">
+            <p class="auth-tag">JOIN US</p>
+            <h1>Create Your Account</h1>
+            <p>
+                Register to start your adoption journey, submit applications,
+                and help pets find a safe and caring home.
+            </p>
 
-    <form>
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" placeholder="Enter your username">
+            <div class="auth-highlights">
+                <div>
+                    <strong>Easy Adoption</strong>
+                    <span>Submit adoption applications online.</span>
+                </div>
 
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="Enter your email">
+                <div>
+                    <strong>Pet Information</strong>
+                    <span>Browse detailed pet profiles anytime.</span>
+                </div>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter your password">
+                <div>
+                    <strong>Responsible Care</strong>
+                    <span>Learn pet care knowledge before adoption.</span>
+                </div>
+            </div>
+        </div>
 
-        <button class="button" type="submit">Register</button>
-    </form>
+        <div class="auth-card">
+            <h2>Register</h2>
+            <p class="auth-subtitle">Create an account to continue.</p>
 
-    <p class="form-tip">
-        Already have an account? <a href="/login">Back to login</a>
-    </p>
+            <form>
+                <div class="auth-form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Create a password" required>
+                </div>
+
+                <div class="auth-form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword"
+                        placeholder="Confirm your password" required>
+                </div>
+
+                <button type="submit" class="auth-submit-btn">Create Account</button>
+            </form>
+
+            <p class="auth-switch">
+                Already have an account?
+                <a href="{{ url_for('login') }}">Back to login</a>
+            </p>
+        </div>
+    </div>
 </section>
 {% endblock %}
