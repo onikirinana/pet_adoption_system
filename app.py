@@ -131,7 +131,6 @@ def adoption():
         total_pages=total_pages
     )
 
-
 @app.route("/adoption/<int:pet_id>")
 def pet_detail(pet_id):
     pet = next((pet for pet in pets if pet["id"] == pet_id), None)
@@ -139,7 +138,9 @@ def pet_detail(pet_id):
     if pet is None:
         abort(404)
 
-    return render_template("pet_detail.html", pet=pet)
+    page = request.args.get("page", 1, type=int)
+
+    return render_template("pet_detail.html", pet=pet, page=page)
 
 
 @app.route("/team")

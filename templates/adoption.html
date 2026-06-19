@@ -13,7 +13,7 @@
     <div class="adoption-grid">
         {% for pet in pets %}
         <div class="adoption-card">
-            <a href="{{ url_for('pet_detail', pet_id=pet.id) }}" class="pet-avatar-link">
+            <a href="{{ url_for('pet_detail', pet_id=pet.id, page=page) }}" class="pet-avatar-link">
                 <img src="{{ url_for('static', filename=pet.image) }}" alt="{{ pet.name }}" class="pet-avatar">
             </a>
 
