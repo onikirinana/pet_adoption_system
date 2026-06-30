@@ -28,6 +28,32 @@ CREATE TABLE admins (
     remark TEXT
 );
 
+CREATE TABLE adoption_records (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    pet_id INTEGER NOT NULL,
+    adopt_time TEXT,
+    state INTEGER DEFAULT 0
+);
+
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    admin_id INTEGER,
+    pet_id INTEGER,
+    comment_time TEXT DEFAULT CURRENT_TIMESTAMP,
+    content TEXT NOT NULL
+);
+
+CREATE TABLE answers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    reply_id INTEGER,
+    comment_id INTEGER NOT NULL,
+    answer_time TEXT DEFAULT CURRENT_TIMESTAMP,
+    content TEXT NOT NULL
+);
+
 INSERT INTO users (
     username,
     password,
