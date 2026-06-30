@@ -2,6 +2,8 @@ DROP TABLE IF EXISTS answers;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS adoption_records;
 DROP TABLE IF EXISTS applications;
+DROP TABLE IF EXISTS blogs;
+DROP TABLE IF EXISTS pets;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS admins;
 
@@ -9,14 +11,13 @@ CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
-    gender TEXT,
+    sex TEXT,
     age INTEGER,
     telephone TEXT,
     email TEXT UNIQUE,
     address TEXT,
-    experience TEXT,
-    profile_image TEXT,
-    state INTEGER DEFAULT 1
+    pic TEXT,
+    state INTEGER DEFAULT 0 CHECK (state IN (0, 1))
 );
 
 CREATE TABLE admins (
@@ -69,16 +70,35 @@ CREATE TABLE applications (
     state INTEGER DEFAULT 0
 );
 
+CREATE TABLE blogs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    action_time TEXT DEFAULT CURRENT_TIMESTAMP,
+    address TEXT,
+    people TEXT,
+    event TEXT,
+    title TEXT NOT NULL
+);
+
+CREATE TABLE pets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pet_name TEXT NOT NULL,
+    pet_type TEXT NOT NULL,
+    sex TEXT,
+    birthday TEXT,
+    pic TEXT,
+    state INTEGER DEFAULT 0 CHECK (state IN (0, 1, 2)),
+    remark TEXT
+);
+
 INSERT INTO users (
     username,
     password,
-    gender,
+    sex,
     age,
     telephone,
     email,
     address,
-    experience,
-    profile_image,
+    pic,
     state
 ) VALUES (
     'testuser',
@@ -88,9 +108,8 @@ INSERT INTO users (
     '0400000000',
     'testuser@example.com',
     'Perth, WA',
-    'Has pet care experience',
     'user1.jpg',
-    1
+    0
 );
 
 INSERT INTO admins (
