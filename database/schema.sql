@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS answers;
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS adoption_records;
+DROP TABLE IF EXISTS applications;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS admins;
 
@@ -52,6 +56,17 @@ CREATE TABLE answers (
     comment_id INTEGER NOT NULL,
     answer_time TEXT DEFAULT CURRENT_TIMESTAMP,
     content TEXT NOT NULL
+);
+
+CREATE TABLE applications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    age INTEGER,
+    telephone TEXT,
+    message TEXT,
+    apply_time TEXT DEFAULT CURRENT_TIMESTAMP,
+    state INTEGER DEFAULT 0
 );
 
 INSERT INTO users (
