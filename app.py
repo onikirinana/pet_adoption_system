@@ -1,4 +1,7 @@
 from flask import Flask, render_template, request, abort
+import sqlite3
+from flask import g
+import os
 
 app = Flask(__name__)
 
@@ -153,10 +156,46 @@ def login():
     return render_template("login.html")
 
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        sex = request.form.get("sex")
+        age = request.form.get("age")
+        telephone = request.form.get("telephone")
+        email = request.form.get("email")
+        address = request.form.get("address")
+        pic = request.form.get("pic")
+
+        db = get_db()
+
+        db.execute("""
+            INSERT INTO users (username, password, sex, age, telephone, email, address, pic, state)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+        """, (username, password, sex, age, telephone, email, address, pic))
+
+        db.commit()
+
+        return "Register Success 🎉"
+
     return render_template("register.html")
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "instance", "pet_adoption.db")
 
+
+def get_db():
+    if "db" not in g:
+        g.db = sqlite3.connect(DB_PATH)
+        g.db.row_factory = sqlite3.Row
+    return g.db
+
+
+@app.teardown_appcontext
+def close_db(error):
+    db = g.pop("db", None)
+    if db is not None:
+        db.close()
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
