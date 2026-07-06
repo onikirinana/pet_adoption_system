@@ -9,7 +9,7 @@
     <!-- SEARCH + ADD -->
     <div class="mb-3 d-flex gap-2">
 
-        <input id="searchInput" class="form-control w-25" placeholder="Username">
+        <input class="form-control w-25" placeholder="Username">
 
         <button class="btn btn-primary">Search</button>
 
@@ -29,13 +29,15 @@
                 <th>Gender</th>
                 <th>Age</th>
                 <th>Phone</th>
+                <th>Email</th>
                 <th>Address</th>
-                <th>Adoption Status</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
         </thead>
 
         <tbody>
+
             {% for u in users %}
             <tr>
                 <td>{{ u.id }}</td>
@@ -43,7 +45,9 @@
                 <td>{{ u.sex }}</td>
                 <td>{{ u.age }}</td>
                 <td>{{ u.telephone }}</td>
+                <td>{{ u.email }}</td>
                 <td>{{ u.address }}</td>
+
                 <td>
                     {% if u.state == 1 %}
                     Has record
@@ -53,22 +57,96 @@
                 </td>
 
                 <td>
-                    <button class="btn btn-sm btn-primary">Edit</button>
 
+                    <!-- EDIT -->
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#editUserModal{{ u.id }}">
+                        Edit
+                    </button>
+
+                    <!-- DELETE -->
                     <a href="/admin/users/delete/{{u.id}}" class="btn btn-sm btn-danger"
                         onclick="return confirm('Delete this user?')">
                         Delete
                     </a>
+
                 </td>
             </tr>
+
+            <!-- ================= EDIT USER MODAL ================= -->
+            <div class="modal fade" id="editUserModal{{ u.id }}">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+
+                        <form action="/admin/users/update/{{ u.id }}" method="POST">
+
+                            <div class="modal-header">
+                                <h5>Edit User</h5>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <div class="row">
+
+                                    <div class="col-md-6">
+
+                                        <label>Username</label>
+                                        <input class="form-control mb-2" name="username" value="{{ u.username }}">
+
+                                        <label>Password</label>
+                                        <input class="form-control mb-2" name="password" placeholder="New password">
+
+                                        <label>Gender</label>
+                                        <select class="form-control mb-2" name="sex">
+                                            <option {% if u.sex=='Male' %}selected{% endif %}>Male</option>
+                                            <option {% if u.sex=='Female' %}selected{% endif %}>Female</option>
+                                        </select>
+
+                                        <label>Age</label>
+                                        <input class="form-control mb-2" name="age" value="{{ u.age }}">
+
+                                    </div>
+
+                                    <div class="col-md-6">
+
+                                        <label>Phone</label>
+                                        <input class="form-control mb-2" name="telephone" value="{{ u.telephone }}">
+
+                                        <label>Email</label>
+                                        <input class="form-control mb-2" name="email" value="{{ u.email }}">
+
+                                        <label>Address</label>
+                                        <input class="form-control mb-2" name="address" value="{{ u.address }}">
+
+                                        <label>Profile Image</label>
+                                        <input class="form-control mb-2" name="pic" value="{{ u.pic }}">
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button class="btn btn-primary" type="submit">Update</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
             {% endfor %}
+
         </tbody>
 
     </table>
 
 </div>
 
-<!-- 🔥 ADD USER MODAL -->
+<!-- ================= ADD USER MODAL ================= -->
 <div class="modal fade" id="addUserModal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -95,16 +173,13 @@
 
                             <input class="form-control mb-2" name="age" placeholder="Age">
 
-                            <input class="form-control mb-2" name="telephone" placeholder="Phone">
-
                         </div>
 
                         <div class="col-md-6">
 
+                            <input class="form-control mb-2" name="telephone" placeholder="Phone">
                             <input class="form-control mb-2" name="email" placeholder="Email">
-
                             <input class="form-control mb-2" name="address" placeholder="Address">
-
                             <input class="form-control mb-2" name="pic" placeholder="Profile image">
 
                         </div>
