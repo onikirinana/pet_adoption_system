@@ -243,7 +243,7 @@ def admin_dashboard():
     if not session.get("admin"):
         return redirect("/")
 
-    return render_template("admin_dashboard.html")
+    return render_template("admin/dashboard.html")
 
 @app.route("/admin/logout")
 def admin_logout():
