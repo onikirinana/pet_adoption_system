@@ -1,11 +1,15 @@
-from flask import Flask, render_template, request, abort
+from flask import Flask, render_template, request, abort, g, session
+from flask import redirect, url_for
 import sqlite3
-from flask import g
 import os
 
 app = Flask(__name__)
+app.secret_key = "pet_adoption_secret_key"
 
 
+# =========================
+# PET DATA (UNCHANGED)
+# =========================
 pets = [
     {
         "id": 1,
@@ -100,9 +104,33 @@ pets = [
 ]
 
 
+# =========================
+# DB CONFIG
+# =========================
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "instance", "pet_adoption.db")
+
+
+def get_db():
+    if "db" not in g:
+        g.db = sqlite3.connect(DB_PATH)
+        g.db.row_factory = sqlite3.Row
+    return g.db
+
+
+@app.teardown_appcontext
+def close_db(error):
+    db = g.pop("db", None)
+    if db is not None:
+        db.close()
+
+
+# =========================
+# ROUTES
+# =========================
 @app.route("/")
 def index():
-    return render_template("index.html",pets=pets)
+    return render_template("index.html", pets=pets)
 
 
 @app.route("/knowledge")
@@ -134,6 +162,7 @@ def adoption():
         total_pages=total_pages
     )
 
+
 @app.route("/adoption/<int:pet_id>")
 def pet_detail(pet_id):
     pet = next((pet for pet in pets if pet["id"] == pet_id), None)
@@ -141,9 +170,7 @@ def pet_detail(pet_id):
     if pet is None:
         abort(404)
 
-    page = request.args.get("page", 1, type=int)
-
-    return render_template("pet_detail.html", pet=pet, page=page)
+    return render_template("pet_detail.html", pet=pet)
 
 
 @app.route("/team")
@@ -156,6 +183,10 @@ def login():
     return render_template("login.html")
 
 
+
+# =========================
+# REGISTER (UNCHANGED)
+# =========================
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -181,21 +212,45 @@ def register():
 
     return render_template("register.html")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "instance", "pet_adoption.db")
 
+# =========================
+# ADMIN LOGIN (SESSION FIXED)
+# =========================
+@app.route("/admin/login", methods=["POST"])
+def admin_login():
+    username = request.form.get("username")
+    password = request.form.get("password")
 
-def get_db():
-    if "db" not in g:
-        g.db = sqlite3.connect(DB_PATH)
-        g.db.row_factory = sqlite3.Row
-    return g.db
+    db = get_db()
+    cursor = db.cursor()
 
+    cursor.execute("""
+        SELECT * FROM admins 
+        WHERE admin_name=? AND admin_password=?
+    """, (username, password))
 
-@app.teardown_appcontext
-def close_db(error):
-    db = g.pop("db", None)
-    if db is not None:
-        db.close()
+    admin = cursor.fetchone()
+
+    if admin:
+        session["admin"] = True
+        session["admin_name"] = username
+        return redirect(url_for("admin_dashboard"))
+    else:
+        return "Login Failed ❌"
+    
+@app.route("/admin/dashboard")
+def admin_dashboard():
+    if not session.get("admin"):
+        return redirect("/")
+
+    return render_template("admin_dashboard.html")
+
+@app.route("/admin/logout")
+def admin_logout():
+    session.clear()
+    return redirect("/")
+# =========================
+# RUN
+# =========================
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
