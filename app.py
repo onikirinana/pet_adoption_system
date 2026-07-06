@@ -102,7 +102,7 @@ pets = [
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html",pets=pets)
 
 
 @app.route("/knowledge")
