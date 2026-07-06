@@ -31,7 +31,7 @@
                 <td>{{ r.message }}</td>
                 <td>{{ r.apply_time }}</td>
 
-                <td>
+                <td class="status-cell">
                     {% if r.state == 0 %}
                     ⏳ Pending
                     {% elif r.state == 1 %}
@@ -51,7 +51,7 @@
                         Reject
                     </button>
 
-                    <button class="btn btn-sm btn-dark" onclick="del({{r.id}})">
+                    <button class="btn btn-sm btn-dark" onclick="deleteApplication({{r.id}})">
                         Delete
                     </button>
 
@@ -65,33 +65,117 @@
 
 </div>
 
+<!-- ================= JS ================= -->
 <script>
 
+    // =========================
+    // APPROVE
+    // =========================
     function approve(id) {
         fetch(`/admin/adopt/approve/${id}`, { method: "POST" })
-            .then(r => r.json())
-            .then(res => {
-                showAlert(res.msg, "success")
-                setTimeout(() => location.reload(), 500)
+            .then(res => res.json())
+            .then(data => {
+
+                showToast(data.msg, "success");
+                updateStatus(id, "Approved");
+
             })
+            .catch(err => {
+                console.log(err);
+                showToast("Request failed", "error");
+            });
     }
 
+
+    // =========================
+    // REJECT
+    // =========================
     function reject(id) {
         fetch(`/admin/adopt/reject/${id}`, { method: "POST" })
-            .then(r => r.json())
-            .then(res => {
-                showAlert(res.msg, "error")
-                setTimeout(() => location.reload(), 500)
+            .then(res => res.json())
+            .then(data => {
+
+                showToast(data.msg, "error");
+                updateStatus(id, "Rejected");
+
             })
+            .catch(err => {
+                console.log(err);
+                showToast("Request failed", "error");
+            });
     }
 
-    function del(id) {
+
+    // =========================
+    // DELETE
+    // =========================
+    function deleteApplication(id) {
         fetch(`/admin/adopt/delete/${id}`, { method: "POST" })
-            .then(r => r.json())
-            .then(res => {
-                showAlert(res.msg)
-                document.getElementById("row" + id).remove()
+            .then(res => res.json())
+            .then(data => {
+
+                showToast(data.msg, "info");
+
+                const row = document.getElementById("row" + id);
+                if (row) row.remove();
+
             })
+            .catch(err => {
+                console.log(err);
+                showToast("Delete failed", "error");
+            });
+    }
+
+
+    // =========================
+    // UPDATE STATUS UI
+    // =========================
+    function updateStatus(id, status) {
+
+        const row = document.getElementById("row" + id);
+        if (!row) return;
+
+        const statusCell = row.querySelector(".status-cell");
+
+        if (status === "Approved") {
+            statusCell.innerHTML = "✅ Approved";
+        }
+
+        if (status === "Rejected") {
+            statusCell.innerHTML = "❌ Rejected";
+        }
+    }
+
+
+    // =========================
+    // TOAST MESSAGE
+    // =========================
+    function showToast(msg, type = "info") {
+
+        let color = "#333";
+
+        if (type === "success") color = "green";
+        if (type === "error") color = "red";
+        if (type === "info") color = "black";
+
+        const toast = document.createElement("div");
+        toast.innerText = msg;
+
+        toast.style.position = "fixed";
+        toast.style.bottom = "20px";
+        toast.style.right = "20px";
+        toast.style.padding = "10px 15px";
+        toast.style.background = color;
+        toast.style.color = "white";
+        toast.style.borderRadius = "6px";
+        toast.style.zIndex = "9999";
+        toast.style.fontSize = "14px";
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 2000);
     }
 
 </script>

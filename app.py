@@ -131,7 +131,7 @@ def register_user():
 
     return jsonify(success=True, msg="Register success")
 # =========================
-# ADOPTION PAGES
+# ADOPTION APPLY PAGES
 # =========================
 @app.route("/adoption")
 def adoption():
