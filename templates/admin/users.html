@@ -39,7 +39,8 @@
         <tbody>
 
             {% for u in users %}
-            <tr>
+            <tr id="user-row-{{u.id}}">
+
                 <td>{{ u.id }}</td>
                 <td>{{ u.username }}</td>
                 <td>{{ u.sex }}</td>
@@ -64,11 +65,10 @@
                         Edit
                     </button>
 
-                    <!-- DELETE -->
-                    <a href="/admin/users/delete/{{u.id}}" class="btn btn-sm btn-danger"
-                        onclick="return confirm('Delete this user?')">
+                    <!-- DELETE (AJAX) -->
+                    <button class="btn btn-sm btn-danger" onclick="deleteUser({{u.id}})">
                         Delete
-                    </a>
+                    </button>
 
                 </td>
             </tr>
@@ -78,7 +78,7 @@
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
 
-                        <form action="/admin/users/update/{{ u.id }}" method="POST">
+                        <form class="editUserForm" data-id="{{u.id}}">
 
                             <div class="modal-header">
                                 <h5>Edit User</h5>
@@ -90,35 +90,27 @@
 
                                     <div class="col-md-6">
 
-                                        <label>Username</label>
                                         <input class="form-control mb-2" name="username" value="{{ u.username }}">
 
-                                        <label>Password</label>
                                         <input class="form-control mb-2" name="password" placeholder="New password">
 
-                                        <label>Gender</label>
                                         <select class="form-control mb-2" name="sex">
                                             <option {% if u.sex=='Male' %}selected{% endif %}>Male</option>
                                             <option {% if u.sex=='Female' %}selected{% endif %}>Female</option>
                                         </select>
 
-                                        <label>Age</label>
                                         <input class="form-control mb-2" name="age" value="{{ u.age }}">
 
                                     </div>
 
                                     <div class="col-md-6">
 
-                                        <label>Phone</label>
                                         <input class="form-control mb-2" name="telephone" value="{{ u.telephone }}">
 
-                                        <label>Email</label>
                                         <input class="form-control mb-2" name="email" value="{{ u.email }}">
 
-                                        <label>Address</label>
                                         <input class="form-control mb-2" name="address" value="{{ u.address }}">
 
-                                        <label>Profile Image</label>
                                         <input class="form-control mb-2" name="pic" value="{{ u.pic }}">
 
                                     </div>
@@ -128,8 +120,15 @@
                             </div>
 
                             <div class="modal-footer">
-                                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button class="btn btn-primary" type="submit">Update</button>
+
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Close
+                                </button>
+
+                                <button type="submit" class="btn btn-primary">
+                                    Update
+                                </button>
+
                             </div>
 
                         </form>
@@ -151,7 +150,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
-            <form action="/admin/users/add" method="POST">
+            <form id="addUserForm">
 
                 <div class="modal-header">
                     <h5>Add New User</h5>
@@ -189,8 +188,15 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-success" type="submit">Create</button>
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+
+                    <button class="btn btn-success" type="submit">
+                        Create
+                    </button>
+
                 </div>
 
             </form>
@@ -198,5 +204,86 @@
         </div>
     </div>
 </div>
+
+<!-- ================= JS ================= -->
+<script>
+
+    // ---------------- ADD USER ----------------
+    document.getElementById("addUserForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        let formData = new FormData(this);
+
+        fetch("/admin/users/add", {
+            method: "POST",
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+
+                showAlert(data.msg, data.success ? "success" : "error");
+
+                if (data.success) {
+                    setTimeout(() => location.reload(), 800);
+                }
+            });
+    });
+
+
+    // ---------------- DELETE USER ----------------
+    function deleteUser(id) {
+
+        Swal.fire({
+            title: "Delete this user?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            confirmButtonColor: "#d33"
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                fetch("/admin/users/delete/" + id)
+                    .then(res => res.json())
+                    .then(data => {
+
+                        showAlert(data.msg, data.success ? "success" : "error");
+
+                        if (data.success) {
+                            document.getElementById("user-row-" + id).remove();
+                        }
+                    });
+            }
+        });
+    }
+
+
+    // ---------------- EDIT USER ----------------
+    document.querySelectorAll(".editUserForm").forEach(form => {
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            let id = this.dataset.id;
+            let formData = new FormData(this);
+
+            fetch("/admin/users/update/" + id, {
+                method: "POST",
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    showAlert(data.msg, data.success ? "success" : "error");
+
+                    if (data.success) {
+                        setTimeout(() => location.reload(), 800);
+                    }
+                });
+        });
+
+    });
+
+</script>
 
 {% endblock %}
