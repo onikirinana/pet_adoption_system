@@ -1,0 +1,56 @@
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="card p-3">
+
+    <h3>Admin Management</h3>
+
+    <!-- Search + Add -->
+    <div class="mb-3 d-flex gap-2">
+        <input type="text" class="form-control w-25" placeholder="Admin Name">
+
+        <button class="btn btn-primary">Search</button>
+        <button class="btn btn-success">Add New</button>
+    </div>
+
+    <!-- Table -->
+    <table class="table table-bordered table-hover">
+
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Real Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Birthday</th>
+                <th>Gender</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for a in admins %}
+            <tr>
+                <td>{{ a.id }}</td>
+                <td>{{ a.admin_name }}</td>
+                <td>{{ a.real_name }}</td>
+                <td>{{ a.telephone }}</td>
+                <td>{{ a.email }}</td>
+                <td>{{ a.birthday }}</td>
+                <td>{{ a.gender }}</td>
+
+                <td>
+                    <button class="btn btn-sm btn-primary">Edit</button>
+                    <button class="btn btn-sm btn-danger">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
