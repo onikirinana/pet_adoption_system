@@ -166,11 +166,31 @@
     document.getElementById("adoptionForm").addEventListener("submit", function (event) {
         event.preventDefault();
 
-        document.getElementById("applicationSuccessMessage").style.display = "block";
+        const formData = new FormData(this);
+        formData.append("pet_id", "{{ pet.id }}");
 
-        setTimeout(function () {
-            closeAdoptionModal();
-        }, 1500);
+        fetch("/adoption/apply", {
+            method: "POST",
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+
+                alert(data.msg);
+
+                if (data.success) {
+                    document.getElementById("applicationSuccessMessage").style.display = "block";
+
+                    setTimeout(function () {
+                        closeAdoptionModal();
+                    }, 1500);
+                }
+
+            })
+            .catch(err => {
+                console.log(err);
+                alert("Submission failed");
+            });
     });
 </script>
 
