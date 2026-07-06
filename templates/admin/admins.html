@@ -8,14 +8,15 @@
 
     <!-- SEARCH + ADD -->
     <div class="mb-3 d-flex gap-2">
+
         <input type="text" class="form-control w-25" placeholder="Admin Name">
 
         <button class="btn btn-primary">Search</button>
 
-        <!-- 🔥 ADD BUTTON -->
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
             Add New
         </button>
+
     </div>
 
     <!-- TABLE -->
@@ -35,8 +36,10 @@
         </thead>
 
         <tbody>
+
             {% for a in admins %}
-            <tr>
+            <tr id="admin-row-{{a.id}}">
+
                 <td>{{ a.id }}</td>
                 <td>{{ a.admin_name }}</td>
                 <td>{{ a.real_name }}</td>
@@ -46,25 +49,26 @@
                 <td>{{ a.gender }}</td>
 
                 <td>
+
                     <!-- EDIT -->
                     <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ a.id }}">
                         Edit
                     </button>
 
-                    <!-- DELETE -->
-                    <a href="/admin/admins/delete/{{ a.id }}" class="btn btn-sm btn-danger"
-                        onclick="return confirm('Delete this admin?')">
+                    <!-- DELETE (AJAX) -->
+                    <button class="btn btn-sm btn-danger" onclick="deleteAdmin({{a.id}})">
                         Delete
-                    </a>
+                    </button>
+
                 </td>
             </tr>
 
-            <!-- 🔥 EDIT MODAL -->
+            <!-- ================= EDIT MODAL ================= -->
             <div class="modal fade" id="editModal{{ a.id }}">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
 
-                        <form action="/admin/admins/update/{{ a.id }}" method="POST">
+                        <form class="editAdminForm" data-id="{{a.id}}">
 
                             <div class="modal-header">
                                 <h5>Edit Admin</h5>
@@ -73,15 +77,20 @@
                             <div class="modal-body">
 
                                 <input class="form-control mb-2" name="admin_name" value="{{ a.admin_name }}">
+
                                 <input class="form-control mb-2" name="admin_password" placeholder="Password">
+
                                 <input class="form-control mb-2" name="real_name" value="{{ a.real_name }}">
+
                                 <input class="form-control mb-2" name="telephone" value="{{ a.telephone }}">
+
                                 <input class="form-control mb-2" name="email" value="{{ a.email }}">
-                                <input class="form-control mb-2" name="birthday" type="date" value="{{ a.birthday }}">
+
+                                <input class="form-control mb-2" type="date" name="birthday" value="{{ a.birthday }}">
 
                                 <select class="form-control mb-2" name="gender">
-                                    <option {{ "selected" if a.gender=="Male" else "" }}>Male</option>
-                                    <option {{ "selected" if a.gender=="Female" else "" }}>Female</option>
+                                    <option {% if a.gender=='Male' %}selected{% endif %}>Male</option>
+                                    <option {% if a.gender=='Female' %}selected{% endif %}>Female</option>
                                 </select>
 
                                 <input class="form-control mb-2" name="profile_image" placeholder="Image URL">
@@ -91,8 +100,15 @@
                             </div>
 
                             <div class="modal-footer">
-                                <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
-                                <button class="btn btn-primary" type="submit">Update</button>
+
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Close
+                                </button>
+
+                                <button type="submit" class="btn btn-primary">
+                                    Update
+                                </button>
+
                             </div>
 
                         </form>
@@ -102,81 +118,55 @@
             </div>
 
             {% endfor %}
+
         </tbody>
 
     </table>
 
 </div>
 
-<!-- 🔥 ADD MODAL -->
+<!-- ================= ADD MODAL ================= -->
 <div class="modal fade" id="addModal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
-            <form action="/admin/admins/add" method="POST">
+            <form id="addAdminForm">
 
                 <div class="modal-header">
-                    <h5>New Admin Information</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5>New Admin</h5>
                 </div>
 
                 <div class="modal-body">
 
-                    <div class="row">
+                    <input class="form-control mb-2" name="admin_name" placeholder="Account">
+                    <input class="form-control mb-2" type="password" name="admin_password" placeholder="Password">
+                    <input class="form-control mb-2" name="real_name" placeholder="Real name">
+                    <input class="form-control mb-2" name="telephone" placeholder="Phone">
+                    <input class="form-control mb-2" type="date" name="birthday">
 
-                        <!-- LEFT -->
-                        <div class="col-md-6">
+                    <select class="form-control mb-2" name="gender">
+                        <option>Male</option>
+                        <option>Female</option>
+                    </select>
 
-                            <label>Account</label>
-                            <input class="form-control mb-2" name="admin_name" placeholder="Login account">
+                    <input class="form-control mb-2" name="email" placeholder="Email">
 
-                            <label>Password</label>
-                            <input class="form-control mb-2" type="password" name="admin_password"
-                                placeholder="Password">
+                    <input class="form-control mb-2" name="profile_image" placeholder="Image URL">
 
-                            <label>Real Name</label>
-                            <input class="form-control mb-2" name="real_name" placeholder="Real name">
-
-                            <label>Phone</label>
-                            <input class="form-control mb-2" name="telephone" placeholder="Phone number">
-
-                            <label>Birthday</label>
-                            <input class="form-control mb-2" type="date" name="birthday">
-
-                        </div>
-
-                        <!-- RIGHT -->
-                        <div class="col-md-6">
-
-                            <label>Gender</label>
-                            <select class="form-control mb-2" name="gender">
-                                <option>Male</option>
-                                <option>Female</option>
-                            </select>
-
-                            <label>Email</label>
-                            <input class="form-control mb-2" name="email" placeholder="Email">
-
-                            <label>Profile Image</label>
-                            <input class="form-control mb-2" type="file" name="profile_image">
-
-                            <label>Introduction</label>
-                            <textarea class="form-control mb-2" name="remark" rows="4"
-                                placeholder="Personal introduction"></textarea>
-
-                        </div>
-
-                    </div>
+                    <textarea class="form-control mb-2" name="remark"></textarea>
 
                 </div>
 
                 <div class="modal-footer">
+
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="submit" class="btn btn-primary">
+
+                    <button class="btn btn-success" type="submit">
                         Create
                     </button>
+
                 </div>
 
             </form>
@@ -184,5 +174,92 @@
         </div>
     </div>
 </div>
+
+<!-- ================= JS ================= -->
+<script>
+
+    // ================= ADD ADMIN =================
+    document.getElementById("addAdminForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        let formData = new FormData(this);
+
+        fetch("/admin/admins/add", {
+            method: "POST",
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+
+                showAlert(data.msg, data.success ? "success" : "error");
+
+                if (data.success) {
+                    setTimeout(() => location.reload(), 800);
+                }
+
+            });
+    });
+
+
+    // ================= DELETE ADMIN =================
+    function deleteAdmin(id) {
+
+        Swal.fire({
+            title: "Delete this admin?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            confirmButtonColor: "#d33"
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                fetch("/admin/admins/delete/" + id)
+                    .then(res => res.json())
+                    .then(data => {
+
+                        showAlert(data.msg, data.success ? "success" : "error");
+
+                        if (data.success) {
+                            document.getElementById("admin-row-" + id).remove();
+                        }
+
+                    });
+
+            }
+
+        });
+    }
+
+
+    // ================= EDIT ADMIN =================
+    document.querySelectorAll(".editAdminForm").forEach(form => {
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            let id = this.dataset.id;
+            let formData = new FormData(this);
+
+            fetch("/admin/admins/update/" + id, {
+                method: "POST",
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    showAlert(data.msg, data.success ? "success" : "error");
+
+                    if (data.success) {
+                        setTimeout(() => location.reload(), 800);
+                    }
+
+                });
+
+        });
+
+    });
+
+</script>
 
 {% endblock %}

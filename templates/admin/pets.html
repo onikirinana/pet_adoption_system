@@ -38,7 +38,8 @@
         <tbody>
 
             {% for p in pets %}
-            <tr>
+            <tr id="pet-row-{{p.id}}">
+
                 <td>{{ p.id }}</td>
                 <td>{{ p.pet_name }}</td>
                 <td>{{ p.pet_type }}</td>
@@ -68,10 +69,10 @@
                         Edit
                     </button>
 
-                    <a href="/admin/pets/delete/{{p.id}}" class="btn btn-sm btn-danger"
-                        onclick="return confirm('Delete this pet?')">
+                    <!-- 🚀 AJAX DELETE -->
+                    <button class="btn btn-sm btn-danger" onclick="deletePet({{p.id}})">
                         Delete
-                    </a>
+                    </button>
 
                 </td>
             </tr>
@@ -81,7 +82,7 @@
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
 
-                        <form action="/admin/pets/update/{{ p.id }}" method="POST" enctype="multipart/form-data">
+                        <form class="editPetForm" data-id="{{p.id}}" enctype="multipart/form-data">
 
                             <div class="modal-header">
                                 <h5>Edit Pet</h5>
@@ -134,7 +135,6 @@
 
                             <div class="modal-footer">
 
-                                <!-- 🚨 FIXED -->
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                     Close
                                 </button>
@@ -164,7 +164,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
-            <form action="/admin/pets/add" method="POST" enctype="multipart/form-data">
+            <form id="addPetForm" enctype="multipart/form-data">
 
                 <div class="modal-header">
                     <h5>Add New Pet</h5>
@@ -195,7 +195,6 @@
 
                         <div class="col-md-6">
 
-                            <!-- 🔥 FILE UPLOAD -->
                             <input class="form-control mb-2" type="file" name="pic">
 
                             <select class="form-control mb-2" name="state">
@@ -214,7 +213,6 @@
 
                 <div class="modal-footer">
 
-                    <!-- 🚨 FIXED -->
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Close
                     </button>
@@ -230,5 +228,92 @@
         </div>
     </div>
 </div>
+
+<!-- ================= JS ================= -->
+<script>
+
+    // ================= ADD PET =================
+    document.getElementById("addPetForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        let formData = new FormData(this);
+
+        fetch("/admin/pets/add", {
+            method: "POST",
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+
+                showAlert(data.msg, data.success ? "success" : "error");
+
+                if (data.success) {
+                    setTimeout(() => location.reload(), 800);
+                }
+
+            });
+    });
+
+
+    // ================= DELETE PET =================
+    function deletePet(id) {
+
+        Swal.fire({
+            title: "Delete this pet?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            confirmButtonColor: "#d33"
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                fetch("/admin/pets/delete/" + id)
+                    .then(res => res.json())
+                    .then(data => {
+
+                        showAlert(data.msg, data.success ? "success" : "error");
+
+                        if (data.success) {
+                            document.getElementById("pet-row-" + id).remove();
+                        }
+
+                    });
+
+            }
+
+        });
+    }
+
+
+    // ================= EDIT PET =================
+    document.querySelectorAll(".editPetForm").forEach(form => {
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            let id = this.dataset.id;
+            let formData = new FormData(this);
+
+            fetch("/admin/pets/update/" + id, {
+                method: "POST",
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    showAlert(data.msg, data.success ? "success" : "error");
+
+                    if (data.success) {
+                        setTimeout(() => location.reload(), 800);
+                    }
+
+                });
+
+        });
+
+    });
+
+</script>
 
 {% endblock %}

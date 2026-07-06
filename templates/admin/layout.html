@@ -6,7 +6,6 @@
     <title>Admin Dashboard</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 
@@ -23,9 +22,47 @@
         {% block content %}{% endblock %}
 
     </div>
+
+    <!-- ================= BOOTSTRAP JS ================= -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-</body>
+    <!-- ================= SWEETALERT2 ================= -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- ================= TOAST (可保留 or 删除) ================= -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+
+        <div id="liveToast" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto">System</strong>
+                <small>now</small>
+            </div>
+            <div class="toast-body" id="toastMsg"></div>
+        </div>
+
+    </div>
+
+    <!-- ================= GLOBAL JS ================= -->
+    <script>
+
+        // 🚀 SweetAlert 版本（推荐用这个）
+        function showAlert(msg, type = "success") {
+            Swal.fire({
+                title: msg,
+                icon: type,   // success / error / warning / info
+                confirmButtonText: "OK"
+            });
+        }
+
+        // （可选保留旧toast）
+        function showToast(msg) {
+            document.getElementById("toastMsg").innerText = msg;
+            let toast = new bootstrap.Toast(document.getElementById('liveToast'));
+            toast.show();
+        }
+
+    </script>
+
+</body>
 
 </html>
