@@ -27,7 +27,7 @@ def close_db(error):
 
 
 # =========================
-# PUBLIC ROUTES
+# HOME
 # =========================
 @app.route("/")
 def index():
@@ -36,8 +36,106 @@ def index():
     return render_template("index.html", pets=pets)
 
 
+# =========================
+# NAVBAR
+# =========================
+@app.route("/knowledge")
+def knowledge():
+    return render_template("knowledge.html")
+
+
+@app.route("/team")
+def team():
+    return render_template("team.html")
+
+
+@app.route("/register")
+def register():
+    return render_template("register.html")
+
+
+# =========================
+# LOGIN SYSTEM
+# =========================
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    # ✅ GET：打开页面（原来你缺这个）
+    if request.method == "GET":
+        return render_template("login.html")
+
+    # POST：登录逻辑（保留你的原逻辑）
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    db = get_db()
+
+    user = db.execute("""
+        SELECT * FROM users 
+        WHERE username=? AND password=?
+    """, (username, password)).fetchone()
+
+    if user:
+        session["user_id"] = user["id"]
+        session["username"] = user["username"]
+
+        return jsonify(success=True, msg="Login success")
+
+    return jsonify(success=False, msg="Invalid credentials")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
+
+
+@app.route("/check_login")
+def check_login():
+    return jsonify(logged_in="user_id" in session)
+
+# =========================
+# REGISTER SYSTEM
+# =========================
+@app.route("/register", methods=["POST"])
+def register_user():
+
+    data = request.form
+
+    username = data.get("username")
+    password = data.get("password")
+    sex = data.get("sex")
+    age = data.get("age")
+    telephone = data.get("telephone")
+    email = data.get("email")
+    address = data.get("address")
+    pic = data.get("pic")
+
+    db = get_db()
+
+    exist = db.execute(
+        "SELECT * FROM users WHERE username=?",
+        (username,)
+    ).fetchone()
+
+    if exist:
+        return jsonify(success=False, msg="Username already exists")
+
+    db.execute("""
+        INSERT INTO users
+        (username, password, sex, age, telephone, email, address, pic, state)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+    """, (username, password, sex, age, telephone, email, address, pic))
+
+    db.commit()
+
+    return jsonify(success=True, msg="Register success")
+# =========================
+# ADOPTION PAGES
+# =========================
 @app.route("/adoption")
 def adoption():
+
     page = request.args.get("page", 1, type=int)
     per_page = 3
     offset = (page - 1) * per_page
@@ -58,7 +156,6 @@ def adoption():
         total_pages=(total + per_page - 1) // per_page
     )
 
-
 @app.route("/adoption/<int:pet_id>")
 def pet_detail(pet_id):
     db = get_db()
@@ -69,6 +166,31 @@ def pet_detail(pet_id):
         abort(404)
 
     return render_template("pet_detail.html", pet=pet)
+
+
+# =========================
+# ADOPTION APPLY
+# =========================
+@app.route("/adoption/apply", methods=["POST"])
+def apply_adoption():
+
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify(success=False, msg="Please login first")
+
+    db = get_db()
+
+    pet_id = request.form.get("pet_id")
+    message = request.form.get("message")
+
+    db.execute("""
+        INSERT INTO applications (user_id, pet_id, message, state)
+        VALUES (?, ?, ?, 0)
+    """, (user_id, pet_id, message))
+
+    db.commit()
+
+    return jsonify(success=True, msg="Application submitted")
 
 
 # =========================
@@ -97,7 +219,7 @@ def admin_login():
 @app.route("/admin/dashboard")
 def admin_dashboard():
     if not session.get("admin"):
-        return redirect("/login")
+        return redirect("/")
 
     return render_template("admin/dashboard.html")
 
@@ -105,95 +227,60 @@ def admin_dashboard():
 @app.route("/admin/logout")
 def admin_logout():
     session.clear()
-    return redirect("/login")
+    return redirect("/")
 
 
 # =========================
+# ADMIN ADOPTION REVIEW
 # =========================
-# ADMIN - ADMINS (AJAX JSON)
-# =========================
+@app.route("/admin/adopt")
+def admin_adopt_list():
 
-@app.route("/admin/admins")
-def admin_list():
-    db = get_db()
-    admins = db.execute("SELECT * FROM admins").fetchall()
-    return render_template("admin/admins.html", admins=admins)
-
-
-@app.route("/admin/admins/add", methods=["POST"])
-def add_admin():
-    data = request.form
     db = get_db()
 
-    try:
-        db.execute("""
-            INSERT INTO admins
-            (admin_name, admin_password, real_name, telephone, email, birthday, gender, profile_image, remark)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            data["admin_name"],
-            data["admin_password"],
-            data["real_name"],
-            data["telephone"],
-            data["email"],
-            data["birthday"],
-            data["gender"],
-            data["profile_image"],
-            data["remark"]
-        ))
+    rows = db.execute("""
+        SELECT 
+            a.id,
+            u.username,
+            p.pet_name,
+            a.message,
+            a.apply_time,
+            a.state
+        FROM applications a
+        JOIN users u ON a.user_id = u.id
+        JOIN pets p ON a.pet_id = p.id
+        ORDER BY a.apply_time DESC
+    """).fetchall()
 
-        db.commit()
-        return jsonify(success=True, msg="Admin created successfully")
-
-    except Exception as e:
-        return jsonify(success=False, msg=str(e))
+    return render_template("admin/adopt.html", rows=rows)
 
 
-@app.route("/admin/admins/delete/<int:id>")
-def delete_admin(id):
+@app.route("/admin/adopt/approve/<int:id>", methods=["POST"])
+def approve_adopt(id):
     db = get_db()
-
-    try:
-        db.execute("DELETE FROM admins WHERE id=?", (id,))
-        db.commit()
-        return jsonify(success=True, msg="Deleted successfully")
-
-    except Exception as e:
-        return jsonify(success=False, msg=str(e))
+    db.execute("UPDATE applications SET state=1 WHERE id=?", (id,))
+    db.commit()
+    return jsonify(success=True, msg="Approved")
 
 
-@app.route("/admin/admins/update/<int:id>", methods=["POST"])
-def update_admin(id):
-    data = request.form
+@app.route("/admin/adopt/reject/<int:id>", methods=["POST"])
+def reject_adopt(id):
     db = get_db()
+    db.execute("UPDATE applications SET state=2 WHERE id=?", (id,))
+    db.commit()
+    return jsonify(success=True, msg="Rejected")
 
-    try:
-        db.execute("""
-            UPDATE admins SET
-            admin_name=?, admin_password=?, real_name=?, telephone=?, email=?, birthday=?, gender=?, profile_image=?, remark=?
-            WHERE id=?
-        """, (
-            data["admin_name"],
-            data["admin_password"],
-            data["real_name"],
-            data["telephone"],
-            data["email"],
-            data["birthday"],
-            data["gender"],
-            data["profile_image"],
-            data["remark"],
-            id
-        ))
 
-        db.commit()
-        return jsonify(success=True, msg="Updated successfully")
-
-    except Exception as e:
-        return jsonify(success=False, msg=str(e))
+@app.route("/admin/adopt/delete/<int:id>", methods=["POST"])
+def delete_adopt(id):
+    db = get_db()
+    db.execute("DELETE FROM applications WHERE id=?", (id,))
+    db.commit()
+    return jsonify(success=True, msg="Deleted")
 
 
 # =========================
-# USERS (AJAX JSON)
+# USERS CRUD
 # =========================
 @app.route("/admin/users")
 def users():
@@ -234,14 +321,9 @@ def add_user():
 @app.route("/admin/users/delete/<int:id>")
 def delete_user(id):
     db = get_db()
-
-    try:
-        db.execute("DELETE FROM users WHERE id=?", (id,))
-        db.commit()
-        return jsonify(success=True, msg="Deleted")
-
-    except Exception as e:
-        return jsonify(success=False, msg=str(e))
+    db.execute("DELETE FROM users WHERE id=?", (id,))
+    db.commit()
+    return jsonify(success=True, msg="Deleted")
 
 
 @app.route("/admin/users/update/<int:id>", methods=["POST"])
@@ -249,32 +331,28 @@ def update_user(id):
     data = request.form
     db = get_db()
 
-    try:
-        db.execute("""
-            UPDATE users SET
-            username=?, password=?, sex=?, age=?, telephone=?, email=?, address=?, pic=?
-            WHERE id=?
-        """, (
-            data["username"],
-            data["password"],
-            data["sex"],
-            data["age"],
-            data["telephone"],
-            data["email"],
-            data["address"],
-            data["pic"],
-            id
-        ))
+    db.execute("""
+        UPDATE users SET
+        username=?, password=?, sex=?, age=?, telephone=?, email=?, address=?, pic=?
+        WHERE id=?
+    """, (
+        data["username"],
+        data["password"],
+        data["sex"],
+        data["age"],
+        data["telephone"],
+        data["email"],
+        data["address"],
+        data["pic"],
+        id
+    ))
 
-        db.commit()
-        return jsonify(success=True, msg="Updated")
-
-    except Exception as e:
-        return jsonify(success=False, msg=str(e))
+    db.commit()
+    return jsonify(success=True, msg="Updated")
 
 
 # =========================
-# PETS (AJAX JSON FIXED)
+# PETS CRUD
 # =========================
 @app.route("/admin/pets")
 def pets_list():
@@ -299,39 +377,30 @@ def add_pet():
 
     db = get_db()
 
-    try:
-        db.execute("""
-            INSERT INTO pets
-            (pet_name, pet_type, sex, birthday, pic, state, remark)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (
-            data["pet_name"],
-            data["pet_type"],
-            data["sex"],
-            data["birthday"],
-            filename,
-            data.get("state", 0),
-            data.get("remark", "")
-        ))
+    db.execute("""
+        INSERT INTO pets
+        (pet_name, pet_type, sex, birthday, pic, state, remark)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        data["pet_name"],
+        data["pet_type"],
+        data["sex"],
+        data["birthday"],
+        filename,
+        data.get("state", 0),
+        data.get("remark", "")
+    ))
 
-        db.commit()
-        return jsonify(success=True, msg="Pet added")
-
-    except Exception as e:
-        return jsonify(success=False, msg=str(e))
+    db.commit()
+    return jsonify(success=True, msg="Pet added")
 
 
 @app.route("/admin/pets/delete/<int:id>")
 def delete_pet(id):
     db = get_db()
-
-    try:
-        db.execute("DELETE FROM pets WHERE id=?", (id,))
-        db.commit()
-        return jsonify(success=True, msg="Deleted")
-
-    except Exception as e:
-        return jsonify(success=False, msg=str(e))
+    db.execute("DELETE FROM pets WHERE id=?", (id,))
+    db.commit()
+    return jsonify(success=True, msg="Deleted")
 
 
 @app.route("/admin/pets/update/<int:id>", methods=["POST"])
@@ -348,29 +417,25 @@ def update_pet(id):
         filename = "uploads/" + file.filename
         file.save(os.path.join("static", filename))
     else:
-        filename = data["old_pic"]
+        filename = data.get("old_pic")
 
-    try:
-        db.execute("""
-            UPDATE pets SET
-            pet_name=?, pet_type=?, sex=?, birthday=?, pic=?, state=?, remark=?
-            WHERE id=?
-        """, (
-            data["pet_name"],
-            data["pet_type"],
-            data["sex"],
-            data["birthday"],
-            filename,
-            data["state"],
-            data.get("remark", ""),
-            id
-        ))
+    db.execute("""
+        UPDATE pets SET
+        pet_name=?, pet_type=?, sex=?, birthday=?, pic=?, state=?, remark=?
+        WHERE id=?
+    """, (
+        data["pet_name"],
+        data["pet_type"],
+        data["sex"],
+        data["birthday"],
+        filename,
+        data["state"],
+        data.get("remark", ""),
+        id
+    ))
 
-        db.commit()
-        return jsonify(success=True, msg="Updated")
-
-    except Exception as e:
-        return jsonify(success=False, msg=str(e))
+    db.commit()
+    return jsonify(success=True, msg="Updated")
 
 
 # =========================

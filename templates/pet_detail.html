@@ -144,14 +144,25 @@
 <!-- ================= JS ================= -->
 <script>
     function openAdoptionModal() {
-        document.getElementById("adoptionModal").style.display = "flex";
-        document.getElementById("applicationSuccessMessage").style.display = "none";
+        fetch("/check_login")
+            .then(r => r.json())
+            .then(data => {
+
+                if (!data.logged_in) {
+                    alert("Please login first");
+                    window.location.href = "/login";
+                    return;
+                }
+
+                document.getElementById("adoptionModal").style.display = "block";
+            });
     }
 
     function closeAdoptionModal() {
         document.getElementById("adoptionModal").style.display = "none";
     }
 
+    // form submit
     document.getElementById("adoptionForm").addEventListener("submit", function (event) {
         event.preventDefault();
 

@@ -61,12 +61,14 @@ CREATE TABLE answers (
 
 CREATE TABLE applications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    age INTEGER,
-    telephone TEXT,
+
+    user_id INTEGER NOT NULL,
+    pet_id INTEGER NOT NULL,
+
     message TEXT,
+
     apply_time TEXT DEFAULT CURRENT_TIMESTAMP,
+
     state INTEGER DEFAULT 0
 );
 

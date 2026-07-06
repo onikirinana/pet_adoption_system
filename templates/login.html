@@ -11,10 +11,10 @@
                 <a href="{{ url_for('register') }}" class="auth-simple-tab">Register</a>
             </div>
 
-            <form class="simple-login-form">
+            <form class="simple-login-form" method="POST" action="/login">
                 <div class="simple-login-row">
                     <label for="loginAccount">Account</label>
-                    <input type="text" id="loginAccount" name="account" placeholder="Enter account" required>
+                    <input type="text" id="loginAccount" name="username" placeholder="Enter account" required>
                 </div>
 
                 <div class="simple-login-row">
@@ -29,5 +29,33 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.querySelector(".simple-login-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch("/login", {
+                method: "POST",
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (data.success) {
+                        // ✅ 登录成功 → 跳主页
+                        window.location.href = "/";
+                    } else {
+                        alert(data.msg);
+                    }
+
+                })
+                .catch(err => {
+                    console.log(err);
+                    alert("Login failed");
+                });
+        });
+    </script>
 </section>
 {% endblock %}

@@ -1,0 +1,99 @@
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="card p-3">
+
+    <h3>🐾 Adoption Applications</h3>
+
+    <table class="table table-bordered table-hover">
+
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Pet</th>
+                <th>Message</th>
+                <th>Apply Time</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for r in rows %}
+            <tr id="row{{r.id}}">
+
+                <td>{{ r.id }}</td>
+                <td>{{ r.username }}</td>
+                <td>{{ r.pet_name }}</td>
+                <td>{{ r.message }}</td>
+                <td>{{ r.apply_time }}</td>
+
+                <td>
+                    {% if r.state == 0 %}
+                    ⏳ Pending
+                    {% elif r.state == 1 %}
+                    ✅ Approved
+                    {% else %}
+                    ❌ Rejected
+                    {% endif %}
+                </td>
+
+                <td>
+
+                    <button class="btn btn-sm btn-success" onclick="approve({{r.id}})">
+                        Approve
+                    </button>
+
+                    <button class="btn btn-sm btn-danger" onclick="reject({{r.id}})">
+                        Reject
+                    </button>
+
+                    <button class="btn btn-sm btn-dark" onclick="del({{r.id}})">
+                        Delete
+                    </button>
+
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+    function approve(id) {
+        fetch(`/admin/adopt/approve/${id}`, { method: "POST" })
+            .then(r => r.json())
+            .then(res => {
+                showAlert(res.msg, "success")
+                setTimeout(() => location.reload(), 500)
+            })
+    }
+
+    function reject(id) {
+        fetch(`/admin/adopt/reject/${id}`, { method: "POST" })
+            .then(r => r.json())
+            .then(res => {
+                showAlert(res.msg, "error")
+                setTimeout(() => location.reload(), 500)
+            })
+    }
+
+    function del(id) {
+        fetch(`/admin/adopt/delete/${id}`, { method: "POST" })
+            .then(r => r.json())
+            .then(res => {
+                showAlert(res.msg)
+                document.getElementById("row" + id).remove()
+            })
+    }
+
+</script>
+
+{% endblock %}
