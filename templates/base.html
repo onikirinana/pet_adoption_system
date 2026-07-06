@@ -20,7 +20,23 @@
             </nav>
 
             <div class="auth-buttons">
-                <a class="auth-btn" href="/login">Register / Login</a>
+                {% if session.get('user_id') %}
+
+                <div class="user-box">
+
+                    <img src="https://ui-avatars.com/api/?name={{ session.get('username') }}" class="avatar">
+
+                    <span>{{ session.get('username') }}</span>
+
+                    <a href="/logout">Logout</a>
+
+                </div>
+
+                {% else %}
+
+                <a href="{{ url_for('login') }}">Register / Login</a>
+
+                {% endif %}
             </div>
         </div>
     </header>
