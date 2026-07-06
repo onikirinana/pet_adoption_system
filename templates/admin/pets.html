@@ -1,0 +1,234 @@
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="card p-3">
+
+    <h3>Pet Information Management</h3>
+
+    <!-- SEARCH + ADD -->
+    <div class="mb-3 d-flex gap-2">
+
+        <input class="form-control w-25" placeholder="Pet type">
+
+        <button class="btn btn-primary">Search</button>
+
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPetModal">
+            Add New
+        </button>
+
+    </div>
+
+    <!-- TABLE -->
+    <table class="table table-bordered table-hover">
+
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Pet Name</th>
+                <th>Type</th>
+                <th>Gender</th>
+                <th>Birthday</th>
+                <th>Image</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for p in pets %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.pet_name }}</td>
+                <td>{{ p.pet_type }}</td>
+                <td>{{ p.sex }}</td>
+                <td>{{ p.birthday }}</td>
+
+                <td>
+                    {% if p.pic %}
+                    <img src="{{ url_for('static', filename=p.pic) }}" width="60">
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if p.state == 0 %}
+                    Available
+                    {% elif p.state == 1 %}
+                    Pending
+                    {% else %}
+                    Adopted
+                    {% endif %}
+                </td>
+
+                <td>
+
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#editPetModal{{ p.id }}">
+                        Edit
+                    </button>
+
+                    <a href="/admin/pets/delete/{{p.id}}" class="btn btn-sm btn-danger"
+                        onclick="return confirm('Delete this pet?')">
+                        Delete
+                    </a>
+
+                </td>
+            </tr>
+
+            <!-- ================= EDIT MODAL ================= -->
+            <div class="modal fade" id="editPetModal{{ p.id }}">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+
+                        <form action="/admin/pets/update/{{ p.id }}" method="POST" enctype="multipart/form-data">
+
+                            <div class="modal-header">
+                                <h5>Edit Pet</h5>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <input type="hidden" name="old_pic" value="{{ p.pic }}">
+
+                                <div class="row">
+
+                                    <div class="col-md-6">
+
+                                        <input class="form-control mb-2" name="pet_name" value="{{ p.pet_name }}">
+
+                                        <select class="form-control mb-2" name="pet_type">
+                                            <option {% if p.pet_type=='Dog' %}selected{% endif %}>Dog</option>
+                                            <option {% if p.pet_type=='Cat' %}selected{% endif %}>Cat</option>
+                                            <option {% if p.pet_type=='Rabbit' %}selected{% endif %}>Rabbit</option>
+                                        </select>
+
+                                        <select class="form-control mb-2" name="sex">
+                                            <option {% if p.sex=='Male' %}selected{% endif %}>Male</option>
+                                            <option {% if p.sex=='Female' %}selected{% endif %}>Female</option>
+                                        </select>
+
+                                        <input class="form-control mb-2" type="date" name="birthday"
+                                            value="{{ p.birthday }}">
+
+                                    </div>
+
+                                    <div class="col-md-6">
+
+                                        <label>Change Image</label>
+                                        <input class="form-control mb-2" type="file" name="pic">
+
+                                        <select class="form-control mb-2" name="state">
+                                            <option value="0" {% if p.state==0 %}selected{% endif %}>Available</option>
+                                            <option value="1" {% if p.state==1 %}selected{% endif %}>Pending</option>
+                                            <option value="2" {% if p.state==2 %}selected{% endif %}>Adopted</option>
+                                        </select>
+
+                                        <textarea class="form-control mb-2" name="remark">{{ p.remark }}</textarea>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+
+                                <!-- 🚨 FIXED -->
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Close
+                                </button>
+
+                                <button type="submit" class="btn btn-primary">
+                                    Update
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<!-- ================= ADD PET MODAL ================= -->
+<div class="modal fade" id="addPetModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <form action="/admin/pets/add" method="POST" enctype="multipart/form-data">
+
+                <div class="modal-header">
+                    <h5>Add New Pet</h5>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <input class="form-control mb-2" name="pet_name" placeholder="Pet Name">
+
+                            <select class="form-control mb-2" name="pet_type">
+                                <option>Dog</option>
+                                <option>Cat</option>
+                                <option>Rabbit</option>
+                            </select>
+
+                            <select class="form-control mb-2" name="sex">
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select>
+
+                            <input class="form-control mb-2" type="date" name="birthday">
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <!-- 🔥 FILE UPLOAD -->
+                            <input class="form-control mb-2" type="file" name="pic">
+
+                            <select class="form-control mb-2" name="state">
+                                <option value="0">Available</option>
+                                <option value="1">Pending</option>
+                                <option value="2">Adopted</option>
+                            </select>
+
+                            <textarea class="form-control mb-2" name="remark"></textarea>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <!-- 🚨 FIXED -->
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+
+                    <button class="btn btn-success" type="submit">
+                        Create
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

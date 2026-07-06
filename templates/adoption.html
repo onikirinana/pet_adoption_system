@@ -2,6 +2,7 @@
 
 {% block content %}
 <section class="adoption-page">
+
     <div class="adoption-decor adoption-decor-left">🐱</div>
     <div class="adoption-decor adoption-decor-right">🐶</div>
 
@@ -10,23 +11,51 @@
         <p>Meet pets who are currently waiting for a loving home.</p>
     </div>
 
+    <!-- 🔥 PET GRID -->
     <div class="adoption-grid">
+
         {% for pet in pets %}
         <div class="adoption-card">
+
+            <!-- IMAGE -->
             <a href="{{ url_for('pet_detail', pet_id=pet.id, page=page) }}" class="pet-avatar-link">
-                <img src="{{ url_for('static', filename=pet.image) }}" alt="{{ pet.name }}" class="pet-avatar">
+
+                <img src="{{ url_for('static', filename=pet.pic) }}" alt="{{ pet.pet_name }}" class="pet-avatar">
+
             </a>
 
-            <h2>{{ pet.name }}</h2>
+            <!-- NAME -->
+            <h2>{{ pet.pet_name }}</h2>
 
-            <div class="pet-summary-box">
-                <p>{{ pet.short_description }}</p>
+            <!-- TYPE -->
+            <div class="pet-type">
+                <span>{{ pet.pet_type }}</span>
             </div>
+
+            <!-- DESCRIPTION -->
+            <div class="pet-summary-box">
+                <p>{{ pet.remark }}</p>
+            </div>
+
+            <!-- STATUS -->
+            <div class="pet-status">
+                {% if pet.state == 0 %}
+                <span class="status available">Available</span>
+                {% elif pet.state == 1 %}
+                <span class="status pending">Pending</span>
+                {% else %}
+                <span class="status adopted">Adopted</span>
+                {% endif %}
+            </div>
+
         </div>
         {% endfor %}
+
     </div>
 
+    <!-- 🔥 PAGINATION -->
     <div class="pagination">
+
         {% if page > 1 %}
         <a href="{{ url_for('adoption', page=page-1) }}">Previous</a>
         {% endif %}
@@ -41,6 +70,8 @@
 
         {% if page < total_pages %} <a href="{{ url_for('adoption', page=page+1) }}">Next</a>
             {% endif %}
+
     </div>
+
 </section>
 {% endblock %}

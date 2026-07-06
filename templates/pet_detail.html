@@ -1,59 +1,62 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <section class="pet-detail-page">
+
     <div class="pet-detail-card">
+
+        <!-- IMAGE -->
         <div class="pet-detail-image">
-            <img src="{{ url_for('static', filename=pet.image) }}" alt="{{ pet.name }}">
+            <img src="{{ url_for('static', filename=pet.pic) }}" alt="{{ pet.pet_name }}">
         </div>
 
+        <!-- INFO -->
         <div class="pet-detail-info">
-            <p class="detail-tag">{{ pet.species }}</p>
-            <h1>{{ pet.name }}</h1>
 
+            <!-- TYPE -->
+            <p class="detail-tag">{{ pet.pet_type }}</p>
+
+            <!-- NAME -->
+            <h1>{{ pet.pet_name }}</h1>
+
+            <!-- GRID INFO -->
             <div class="detail-info-grid">
+
                 <div>
                     <span>Birthday</span>
                     <strong>{{ pet.birthday }}</strong>
                 </div>
 
                 <div>
-                    <span>Breed</span>
-                    <strong>{{ pet.breed }}</strong>
-                </div>
-
-                <div>
                     <span>Gender</span>
-                    <strong>{{ pet.gender }}</strong>
+                    <strong>{{ pet.sex }}</strong>
                 </div>
 
                 <div>
-                    <span>Vaccinated</span>
-                    <strong>{{ pet.vaccinated }}</strong>
+                    <span>Status</span>
+                    <strong>
+                        {% if pet.state == 0 %}
+                        Available
+                        {% elif pet.state == 1 %}
+                        Pending
+                        {% else %}
+                        Adopted
+                        {% endif %}
+                    </strong>
                 </div>
+
             </div>
 
+            <!-- ABOUT -->
             <div class="detail-section">
-                <h3>About {{ pet.name }}</h3>
-                <p>{{ pet.description }}</p>
+                <h3>About {{ pet.pet_name }}</h3>
+                <p>{{ pet.remark }}</p>
             </div>
 
-            <div class="detail-section">
-                <h3>Lost / Found Location</h3>
-                <p>{{ pet.lost_location }}</p>
-            </div>
-
-            <div class="detail-section">
-                <h3>Personality</h3>
-                <p>{{ pet.personality }}</p>
-            </div>
-
-            <div class="detail-section">
-                <h3>Health Status</h3>
-                <p>{{ pet.health_status }}</p>
-            </div>
-
+            <!-- ACTIONS -->
             <div class="detail-actions">
+
                 <button type="button" class="adopt-btn" onclick="openAdoptionModal()">
                     I Want to Adopt
                 </button>
@@ -61,52 +64,61 @@
                 <a href="{{ url_for('adoption', page=page) }}" class="back-btn">
                     Back to Center
                 </a>
+
             </div>
+
         </div>
+
     </div>
+
 </section>
+
+<!-- ================= ADOPTION MODAL ================= -->
 <div id="adoptionModal" class="adoption-modal-overlay">
+
     <div class="adoption-modal">
+
         <div class="adoption-modal-header">
             <h2>Confirm Your Information</h2>
             <button type="button" class="adoption-modal-close" onclick="closeAdoptionModal()">×</button>
         </div>
 
         <form id="adoptionForm" class="adoption-form">
+
             <div class="form-row">
-                <label for="applicantName">Applicant Name:</label>
-                <input type="text" id="applicantName" name="applicantName" placeholder="Enter your name" required>
+                <label>Applicant Name:</label>
+                <input type="text" name="applicantName" placeholder="Enter your name" required>
+            </div>
+
+            <!-- 🔥 FIXED -->
+            <div class="form-row">
+                <label>Pet Name:</label>
+                <input type="text" value="{{ pet.pet_name }}" readonly>
             </div>
 
             <div class="form-row">
-                <label for="petName">Pet Name:</label>
-                <input type="text" id="petName" name="petName" value="{{ pet.name }}" readonly>
-            </div>
-
-            <div class="form-row">
-                <label for="gender">Gender:</label>
-                <select id="gender" name="gender" required>
-                    <option value="">Select your gender</option>
-                    <option value="Female">Female</option>
-                    <option value="Male">Male</option>
-                    <option value="Other">Other</option>
-                    <option value="Prefer not to say">Prefer not to say</option>
+                <label>Gender:</label>
+                <select required>
+                    <option value="">Select</option>
+                    <option>Female</option>
+                    <option>Male</option>
+                    <option>Other</option>
                 </select>
             </div>
 
             <div class="form-row">
-                <label for="phone">Phone:</label>
-                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                <label>Phone:</label>
+                <input type="tel" placeholder="Enter phone" required>
             </div>
 
             <div class="form-row">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                <label>Email:</label>
+                <input type="email" placeholder="Enter email" required>
             </div>
 
             <div class="form-row">
-                <label for="address">Address:</label>
-                <input type="text" id="address" name="address" placeholder="Enter your address" required>
+                <label>Address:</label>
+                <input type="text" placeholder="Enter address" required>
             </div>
 
             <p id="applicationSuccessMessage" class="application-success-message">
@@ -114,13 +126,22 @@
             </p>
 
             <div class="adoption-modal-actions">
-                <button type="button" class="modal-cancel-btn" onclick="closeAdoptionModal()">Close</button>
-                <button type="submit" class="modal-submit-btn">Submit Application</button>
+                <button type="button" class="modal-cancel-btn" onclick="closeAdoptionModal()">
+                    Close
+                </button>
+
+                <button type="submit" class="modal-submit-btn">
+                    Submit Application
+                </button>
             </div>
+
         </form>
+
     </div>
+
 </div>
 
+<!-- ================= JS ================= -->
 <script>
     function openAdoptionModal() {
         document.getElementById("adoptionModal").style.display = "flex";
@@ -138,7 +159,8 @@
 
         setTimeout(function () {
             closeAdoptionModal();
-        }, 1800);
+        }, 1500);
     });
 </script>
+
 {% endblock %}

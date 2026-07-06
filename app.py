@@ -1,108 +1,9 @@
-from flask import Flask, render_template, request, abort, g, session
-from flask import redirect, url_for
+from flask import Flask, render_template, request, abort, g, session, redirect, url_for
 import sqlite3
 import os
 
 app = Flask(__name__)
 app.secret_key = "pet_adoption_secret_key"
-
-
-# =========================
-# PET DATA (UNCHANGED)
-# =========================
-pets = [
-    {
-        "id": 1,
-        "name": "Soju",
-        "species": "Dog",
-        "breed": "Old English Sheepdog",
-        "gender": "Male",
-        "birthday": "2021-04-12",
-        "image": "images/pets/soju.webp",
-        "short_description": "Soju is friendly, energetic, and loves people.",
-        "lost_location": "Found near Kings Park, Perth.",
-        "personality": "Playful, smart, gentle, and very social.",
-        "health_status": "Healthy. No major medical issues found.",
-        "vaccinated": "Yes",
-        "description": "Soju is a friendly and active dog who enjoys outdoor walks and human company. He was found near Kings Park and has been well cared for since arriving at the rescue center. He is suitable for a family that can provide enough space, exercise, and attention."
-    },
-    {
-        "id": 2,
-        "name": "Minnie",
-        "species": "Cat",
-        "breed": "British Shorthair",
-        "gender": "Female",
-        "birthday": "2022-09-03",
-        "image": "images/pets/minnie.jpeg",
-        "short_description": "Minnie is quiet, sweet, and a little shy.",
-        "lost_location": "Found near Victoria Park.",
-        "personality": "Gentle, calm, shy at first, but very affectionate after trust is built.",
-        "health_status": "Healthy. Slightly underweight but recovering well.",
-        "vaccinated": "Yes",
-        "description": "Minnie is a sweet cat who needs a patient adopter. She may hide when she first arrives at a new home, but she becomes very loving once she feels safe. She is suitable for a quiet home and an adopter who can give her time to adjust."
-    },
-    {
-        "id": 3,
-        "name": "Kena",
-        "species": "Cat",
-        "breed": "Domestic Shorthair",
-        "gender": "Male",
-        "birthday": "2020-11-18",
-        "image": "images/pets/kena.webp",
-        "short_description": "Kena is warm, friendly, and curious.",
-        "lost_location": "Found near Cannington Station.",
-        "personality": "Curious, confident, friendly, and enjoys being around people.",
-        "health_status": "Healthy and active.",
-        "vaccinated": "No",
-        "description": "Kena is a confident and curious cat who enjoys exploring his surroundings. He likes attention and adapts quickly to new environments. He would be a good match for adopters who want an interactive and friendly companion."
-    },
-    {
-        "id": 4,
-        "name": "Luna",
-        "species": "Dog",
-        "breed": "Golden Retriever",
-        "gender": "Female",
-        "birthday": "2021-06-25",
-        "image": "images/pets/luna.jpg",
-        "short_description": "Luna is loving, calm, and family-friendly.",
-        "lost_location": "Found near Scarborough Beach.",
-        "personality": "Loyal, gentle, patient, and good with children.",
-        "health_status": "Healthy. Regular check-up completed.",
-        "vaccinated": "Yes",
-        "description": "Luna is a gentle dog with a calm personality. She enjoys walks, people, and quiet family time. She would be suitable for a family or an adopter looking for a loyal and affectionate pet."
-    },
-    {
-        "id": 5,
-        "name": "Oreo",
-        "species": "Cat",
-        "breed": "Tuxedo Cat",
-        "gender": "Male",
-        "birthday": "2023-01-10",
-        "image": "images/pets/oreo.jpeg",
-        "short_description": "Oreo is playful and full of energy.",
-        "lost_location": "Found near Northbridge.",
-        "personality": "Active, playful, curious, and funny.",
-        "health_status": "Healthy. Needs routine vaccination update.",
-        "vaccinated": "No",
-        "description": "Oreo is a young and playful cat who loves toys and climbing. He has a lot of energy and would enjoy a home with enough space and interaction. He is best suited for someone who enjoys playful pets."
-    },
-    {
-        "id": 6,
-        "name": "Coco",
-        "species": "Rabbit",
-        "breed": "Holland Lop",
-        "gender": "Female",
-        "birthday": "2022-03-08",
-        "image": "images/pets/coco.webp",
-        "short_description": "Coco is soft, quiet, and easy to care for.",
-        "lost_location": "Surrendered by previous owner.",
-        "personality": "Quiet, gentle, relaxed, and likes clean spaces.",
-        "health_status": "Healthy.",
-        "vaccinated": "Yes",
-        "description": "Coco is a gentle rabbit who enjoys a quiet environment. She needs a clean living area, fresh vegetables, and gentle handling. She is suitable for adopters who understand rabbit care."
-    }
-]
-
 
 # =========================
 # DB CONFIG
@@ -126,10 +27,12 @@ def close_db(error):
 
 
 # =========================
-# ROUTES
+# PUBLIC ROUTES
 # =========================
 @app.route("/")
 def index():
+    db = get_db()
+    pets = db.execute("SELECT * FROM pets").fetchall()
     return render_template("index.html", pets=pets)
 
 
@@ -142,22 +45,22 @@ def knowledge():
 def adoption():
     page = request.args.get("page", 1, type=int)
     per_page = 3
+    offset = (page - 1) * per_page
 
-    total_pets = len(pets)
-    total_pages = (total_pets + per_page - 1) // per_page
+    db = get_db()
 
-    if page < 1:
-        page = 1
-    if page > total_pages:
-        page = total_pages
+    total = db.execute("SELECT COUNT(*) FROM pets").fetchone()[0]
 
-    start = (page - 1) * per_page
-    end = start + per_page
-    current_pets = pets[start:end]
+    pets = db.execute("""
+        SELECT * FROM pets
+        LIMIT ? OFFSET ?
+    """, (per_page, offset)).fetchall()
+
+    total_pages = (total + per_page - 1) // per_page
 
     return render_template(
         "adoption.html",
-        pets=current_pets,
+        pets=pets,
         page=page,
         total_pages=total_pages
     )
@@ -165,7 +68,12 @@ def adoption():
 
 @app.route("/adoption/<int:pet_id>")
 def pet_detail(pet_id):
-    pet = next((pet for pet in pets if pet["id"] == pet_id), None)
+    db = get_db()
+
+    pet = db.execute(
+        "SELECT * FROM pets WHERE id=?",
+        (pet_id,)
+    ).fetchone()
 
     if pet is None:
         abort(404)
@@ -183,38 +91,38 @@ def login():
     return render_template("login.html")
 
 
-
 # =========================
-# REGISTER (UNCHANGED)
+# REGISTER
 # =========================
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        sex = request.form.get("sex")
-        age = request.form.get("age")
-        telephone = request.form.get("telephone")
-        email = request.form.get("email")
-        address = request.form.get("address")
-        pic = request.form.get("pic")
-
+        data = request.form
         db = get_db()
 
         db.execute("""
-            INSERT INTO users (username, password, sex, age, telephone, email, address, pic, state)
+            INSERT INTO users
+            (username, password, sex, age, telephone, email, address, pic, state)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
-        """, (username, password, sex, age, telephone, email, address, pic))
+        """, (
+            data["username"],
+            data["password"],
+            data["sex"],
+            data["age"],
+            data["telephone"],
+            data["email"],
+            data["address"],
+            data["pic"]
+        ))
 
         db.commit()
-
         return "Register Success 🎉"
 
     return render_template("register.html")
 
 
 # =========================
-# ADMIN LOGIN (SESSION FIXED)
+# ADMIN LOGIN
 # =========================
 @app.route("/admin/login", methods=["POST"])
 def admin_login():
@@ -222,14 +130,11 @@ def admin_login():
     password = request.form.get("password")
 
     db = get_db()
-    cursor = db.cursor()
 
-    cursor.execute("""
+    admin = db.execute("""
         SELECT * FROM admins 
         WHERE admin_name=? AND admin_password=?
-    """, (username, password))
-
-    admin = cursor.fetchone()
+    """, (username, password)).fetchone()
 
     if admin:
         session["admin"] = True
@@ -237,30 +142,37 @@ def admin_login():
         return redirect(url_for("admin_dashboard"))
     else:
         return "Login Failed ❌"
-    
+
+
 @app.route("/admin/dashboard")
 def admin_dashboard():
     if not session.get("admin"):
-        return redirect("/")
+        return redirect("/login")
 
     return render_template("admin/dashboard.html")
+
 
 @app.route("/admin/logout")
 def admin_logout():
     session.clear()
-    return redirect("/")
+    return redirect("/login")
 
+
+# =========================
+# ADMIN - ADMINS CRUD
+# =========================
 @app.route("/admin/admins")
 def admin_list():
     db = get_db()
     admins = db.execute("SELECT * FROM admins").fetchall()
     return render_template("admin/admins.html", admins=admins)
 
+
 @app.route("/admin/admins/add", methods=["POST"])
 def add_admin():
     data = request.form
-
     db = get_db()
+
     db.execute("""
         INSERT INTO admins
         (admin_name, admin_password, real_name, telephone, email, birthday, gender, profile_image, remark)
@@ -280,12 +192,14 @@ def add_admin():
     db.commit()
     return "success"
 
+
 @app.route("/admin/admins/delete/<int:id>")
 def delete_admin(id):
     db = get_db()
     db.execute("DELETE FROM admins WHERE id=?", (id,))
     db.commit()
     return "deleted"
+
 
 @app.route("/admin/admins/update/<int:id>", methods=["POST"])
 def update_admin(id):
@@ -312,11 +226,16 @@ def update_admin(id):
     db.commit()
     return "updated"
 
+
+# =========================
+# USERS CRUD
+# =========================
 @app.route("/admin/users")
 def users():
     db = get_db()
     users = db.execute("SELECT * FROM users").fetchall()
     return render_template("admin/users.html", users=users)
+
 
 @app.route("/admin/users/add", methods=["POST"])
 def add_user():
@@ -342,12 +261,14 @@ def add_user():
     db.commit()
     return "success"
 
+
 @app.route("/admin/users/delete/<int:id>")
 def delete_user(id):
     db = get_db()
     db.execute("DELETE FROM users WHERE id=?", (id,))
     db.commit()
     return "deleted"
+
 
 @app.route("/admin/users/update/<int:id>", methods=["POST"])
 def update_user(id):
@@ -372,6 +293,95 @@ def update_user(id):
 
     db.commit()
     return "updated"
+
+
+# =========================
+# PETS CRUD
+# =========================
+@app.route("/admin/pets")
+def pets_list():
+    db = get_db()
+    pets = db.execute("SELECT * FROM pets").fetchall()
+    return render_template("admin/pets.html", pets=pets)
+
+
+@app.route("/admin/pets/add", methods=["POST"])
+def add_pet():
+    data = request.form
+    file = request.files.get("pic")
+
+    filename = None
+
+    # 保存上传文件
+    if file and file.filename != "":
+        upload_folder = os.path.join("static", "uploads")
+        os.makedirs(upload_folder, exist_ok=True)
+
+        filename = "uploads/" + file.filename
+        file.save(os.path.join("static", filename))
+
+    db = get_db()
+
+    db.execute("""
+        INSERT INTO pets
+        (pet_name, pet_type, sex, birthday, pic, state, remark)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        data["pet_name"],
+        data["pet_type"],
+        data["sex"],
+        data["birthday"],
+        filename,
+        data.get("state", 0),
+        data.get("remark", "")
+    ))
+
+    db.commit()
+    return redirect("/admin/pets")
+
+
+@app.route("/admin/pets/delete/<int:id>")
+def delete_pet(id):
+    db = get_db()
+    db.execute("DELETE FROM pets WHERE id=?", (id,))
+    db.commit()
+    return "deleted"
+
+
+@app.route("/admin/pets/update/<int:id>", methods=["POST"])
+def update_pet(id):
+    data = request.form
+    file = request.files.get("pic")
+
+    db = get_db()
+
+    if file and file.filename != "":
+        upload_folder = os.path.join("static", "uploads")
+        os.makedirs(upload_folder, exist_ok=True)
+
+        filename = "uploads/" + file.filename
+        file.save(os.path.join("static", filename))
+    else:
+        filename = data["old_pic"]
+
+    db.execute("""
+        UPDATE pets SET
+        pet_name=?, pet_type=?, sex=?, birthday=?, pic=?, state=?, remark=?
+        WHERE id=?
+    """, (
+        data["pet_name"],
+        data["pet_type"],
+        data["sex"],
+        data["birthday"],
+        filename,
+        data["state"],
+        data.get("remark", ""),
+        id
+    ))
+
+    db.commit()
+    return redirect("/admin/pets")
+
 # =========================
 # RUN
 # =========================
