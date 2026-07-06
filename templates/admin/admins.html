@@ -6,15 +6,19 @@
 
     <h3>Admin Management</h3>
 
-    <!-- Search + Add -->
+    <!-- SEARCH + ADD -->
     <div class="mb-3 d-flex gap-2">
         <input type="text" class="form-control w-25" placeholder="Admin Name">
 
         <button class="btn btn-primary">Search</button>
-        <button class="btn btn-success">Add New</button>
+
+        <!-- 🔥 ADD BUTTON -->
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
+            Add New
+        </button>
     </div>
 
-    <!-- Table -->
+    <!-- TABLE -->
     <table class="table table-bordered table-hover">
 
         <thead>
@@ -42,15 +46,143 @@
                 <td>{{ a.gender }}</td>
 
                 <td>
-                    <button class="btn btn-sm btn-primary">Edit</button>
-                    <button class="btn btn-sm btn-danger">Delete</button>
+                    <!-- EDIT -->
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ a.id }}">
+                        Edit
+                    </button>
+
+                    <!-- DELETE -->
+                    <a href="/admin/admins/delete/{{ a.id }}" class="btn btn-sm btn-danger"
+                        onclick="return confirm('Delete this admin?')">
+                        Delete
+                    </a>
                 </td>
             </tr>
+
+            <!-- 🔥 EDIT MODAL -->
+            <div class="modal fade" id="editModal{{ a.id }}">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+
+                        <form action="/admin/admins/update/{{ a.id }}" method="POST">
+
+                            <div class="modal-header">
+                                <h5>Edit Admin</h5>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <input class="form-control mb-2" name="admin_name" value="{{ a.admin_name }}">
+                                <input class="form-control mb-2" name="admin_password" placeholder="Password">
+                                <input class="form-control mb-2" name="real_name" value="{{ a.real_name }}">
+                                <input class="form-control mb-2" name="telephone" value="{{ a.telephone }}">
+                                <input class="form-control mb-2" name="email" value="{{ a.email }}">
+                                <input class="form-control mb-2" name="birthday" type="date" value="{{ a.birthday }}">
+
+                                <select class="form-control mb-2" name="gender">
+                                    <option {{ "selected" if a.gender=="Male" else "" }}>Male</option>
+                                    <option {{ "selected" if a.gender=="Female" else "" }}>Female</option>
+                                </select>
+
+                                <input class="form-control mb-2" name="profile_image" placeholder="Image URL">
+
+                                <textarea class="form-control" name="remark">{{ a.remark }}</textarea>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+                                <button class="btn btn-primary" type="submit">Update</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
             {% endfor %}
         </tbody>
 
     </table>
 
+</div>
+
+<!-- 🔥 ADD MODAL -->
+<div class="modal fade" id="addModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <form action="/admin/admins/add" method="POST">
+
+                <div class="modal-header">
+                    <h5>New Admin Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+
+                        <!-- LEFT -->
+                        <div class="col-md-6">
+
+                            <label>Account</label>
+                            <input class="form-control mb-2" name="admin_name" placeholder="Login account">
+
+                            <label>Password</label>
+                            <input class="form-control mb-2" type="password" name="admin_password"
+                                placeholder="Password">
+
+                            <label>Real Name</label>
+                            <input class="form-control mb-2" name="real_name" placeholder="Real name">
+
+                            <label>Phone</label>
+                            <input class="form-control mb-2" name="telephone" placeholder="Phone number">
+
+                            <label>Birthday</label>
+                            <input class="form-control mb-2" type="date" name="birthday">
+
+                        </div>
+
+                        <!-- RIGHT -->
+                        <div class="col-md-6">
+
+                            <label>Gender</label>
+                            <select class="form-control mb-2" name="gender">
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select>
+
+                            <label>Email</label>
+                            <input class="form-control mb-2" name="email" placeholder="Email">
+
+                            <label>Profile Image</label>
+                            <input class="form-control mb-2" type="file" name="profile_image">
+
+                            <label>Introduction</label>
+                            <textarea class="form-control mb-2" name="remark" rows="4"
+                                placeholder="Personal introduction"></textarea>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Create
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
 </div>
 
 {% endblock %}
