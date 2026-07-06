@@ -251,17 +251,66 @@ def admin_logout():
     return redirect("/")
 
 @app.route("/admin/admins")
-def admin_admins():
-    if not session.get("admin"):
-        return redirect("/")
+def admin_list():
+    db = get_db()
+    admins = db.execute("SELECT * FROM admins").fetchall()
+    return render_template("admin/admins.html", admins=admins)
+
+@app.route("/admin/admins/add", methods=["POST"])
+def add_admin():
+    data = request.form
 
     db = get_db()
-    cursor = db.cursor()
+    db.execute("""
+        INSERT INTO admins
+        (admin_name, admin_password, real_name, telephone, email, birthday, gender, profile_image, remark)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        data["admin_name"],
+        data["admin_password"],
+        data["real_name"],
+        data["telephone"],
+        data["email"],
+        data["birthday"],
+        data["gender"],
+        data["profile_image"],
+        data["remark"]
+    ))
 
-    cursor.execute("SELECT * FROM admins")
-    admins = cursor.fetchall()
+    db.commit()
+    return "success"
 
-    return render_template("admin/admins.html", admins=admins)
+@app.route("/admin/admins/delete/<int:id>")
+def delete_admin(id):
+    db = get_db()
+    db.execute("DELETE FROM admins WHERE id=?", (id,))
+    db.commit()
+    return "deleted"
+
+@app.route("/admin/admins/update/<int:id>", methods=["POST"])
+def update_admin(id):
+    data = request.form
+    db = get_db()
+
+    db.execute("""
+        UPDATE admins SET
+        admin_name=?, admin_password=?, real_name=?, telephone=?, email=?, birthday=?, gender=?, profile_image=?, remark=?
+        WHERE id=?
+    """, (
+        data["admin_name"],
+        data["admin_password"],
+        data["real_name"],
+        data["telephone"],
+        data["email"],
+        data["birthday"],
+        data["gender"],
+        data["profile_image"],
+        data["remark"],
+        id
+    ))
+
+    db.commit()
+    return "updated"
 # =========================
 # RUN
 # =========================
