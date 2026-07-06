@@ -249,6 +249,19 @@ def admin_dashboard():
 def admin_logout():
     session.clear()
     return redirect("/")
+
+@app.route("/admin/admins")
+def admin_admins():
+    if not session.get("admin"):
+        return redirect("/")
+
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT * FROM admins")
+    admins = cursor.fetchall()
+
+    return render_template("admin/admins.html", admins=admins)
 # =========================
 # RUN
 # =========================
