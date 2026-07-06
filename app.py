@@ -311,6 +311,67 @@ def update_admin(id):
 
     db.commit()
     return "updated"
+
+@app.route("/admin/users")
+def users():
+    db = get_db()
+    users = db.execute("SELECT * FROM users").fetchall()
+    return render_template("admin/users.html", users=users)
+
+@app.route("/admin/users/add", methods=["POST"])
+def add_user():
+    data = request.form
+    db = get_db()
+
+    db.execute("""
+        INSERT INTO users
+        (username, password, sex, age, telephone, email, address, pic, state)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        data["username"],
+        data["password"],
+        data["sex"],
+        data["age"],
+        data["telephone"],
+        data["email"],
+        data["address"],
+        data["pic"],
+        0
+    ))
+
+    db.commit()
+    return "success"
+
+@app.route("/admin/users/delete/<int:id>")
+def delete_user(id):
+    db = get_db()
+    db.execute("DELETE FROM users WHERE id=?", (id,))
+    db.commit()
+    return "deleted"
+
+@app.route("/admin/users/update/<int:id>", methods=["POST"])
+def update_user(id):
+    data = request.form
+    db = get_db()
+
+    db.execute("""
+        UPDATE users SET
+        username=?, password=?, sex=?, age=?, telephone=?, email=?, address=?, pic=?
+        WHERE id=?
+    """, (
+        data["username"],
+        data["password"],
+        data["sex"],
+        data["age"],
+        data["telephone"],
+        data["email"],
+        data["address"],
+        data["pic"],
+        id
+    ))
+
+    db.commit()
+    return "updated"
 # =========================
 # RUN
 # =========================

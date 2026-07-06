@@ -1,0 +1,127 @@
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div class="card p-3">
+
+    <h3>User Management</h3>
+
+    <!-- SEARCH + ADD -->
+    <div class="mb-3 d-flex gap-2">
+
+        <input id="searchInput" class="form-control w-25" placeholder="Username">
+
+        <button class="btn btn-primary">Search</button>
+
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            Add New
+        </button>
+
+    </div>
+
+    <!-- TABLE -->
+    <table class="table table-hover table-bordered">
+
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Adoption Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ u.sex }}</td>
+                <td>{{ u.age }}</td>
+                <td>{{ u.telephone }}</td>
+                <td>{{ u.address }}</td>
+                <td>
+                    {% if u.state == 1 %}
+                    Has record
+                    {% else %}
+                    No record
+                    {% endif %}
+                </td>
+
+                <td>
+                    <button class="btn btn-sm btn-primary">Edit</button>
+
+                    <a href="/admin/users/delete/{{u.id}}" class="btn btn-sm btn-danger"
+                        onclick="return confirm('Delete this user?')">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+<!-- 🔥 ADD USER MODAL -->
+<div class="modal fade" id="addUserModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <form action="/admin/users/add" method="POST">
+
+                <div class="modal-header">
+                    <h5>Add New User</h5>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <input class="form-control mb-2" name="username" placeholder="Username">
+                            <input class="form-control mb-2" name="password" placeholder="Password">
+
+                            <select class="form-control mb-2" name="sex">
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select>
+
+                            <input class="form-control mb-2" name="age" placeholder="Age">
+
+                            <input class="form-control mb-2" name="telephone" placeholder="Phone">
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <input class="form-control mb-2" name="email" placeholder="Email">
+
+                            <input class="form-control mb-2" name="address" placeholder="Address">
+
+                            <input class="form-control mb-2" name="pic" placeholder="Profile image">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-success" type="submit">Create</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
