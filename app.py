@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, abort, g, session, redirect, url_for, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
 
@@ -62,27 +63,30 @@ def register():
 
 
 # =========================
-# LOGIN SYSTEM
+# USERSLOGIN SYSTEM
 # =========================
 @app.route("/login", methods=["GET", "POST"])
 def login():
-
-    # ✅ GET：打开页面（原来你缺这个）
+    
     if request.method == "GET":
         return render_template("login.html")
 
-    # POST：登录逻辑（保留你的原逻辑）
     username = request.form.get("username")
     password = request.form.get("password")
 
     db = get_db()
-
+    
     user = db.execute("""
         SELECT * FROM users 
-        WHERE username=? AND password=?
-    """, (username, password)).fetchone()
+        WHERE username=?
+    """, (username,)).fetchone()
 
-    if user:
+
+    if user and check_password_hash(
+        user["password"],
+        password
+    ):
+
         session["user_id"] = user["id"]
         session["username"] = user["username"]
 
@@ -102,7 +106,7 @@ def check_login():
     return jsonify(logged_in="user_id" in session)
 
 # =========================
-# REGISTER SYSTEM
+# USERS REGISTER SYSTEM(ADD SALT)
 # =========================
 @app.route("/register", methods=["POST"])
 def register_user():
@@ -111,6 +115,7 @@ def register_user():
 
     username = data.get("username")
     password = data.get("password")
+    hashed_password = generate_password_hash(password)
     sex = data.get("sex")
     age = data.get("age")
     telephone = data.get("telephone")
@@ -132,7 +137,7 @@ def register_user():
         INSERT INTO users
         (username, password, sex, age, telephone, email, address, pic, state)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
-    """, (username, password, sex, age, telephone, email, address, pic))
+    """, (username, hashed_password, sex, age, telephone, email, address, pic))
 
     db.commit()
 
@@ -202,33 +207,42 @@ def apply_adoption():
 
 
 # =========================
-# ADMIN LOGIN
+# ADMINS LOGIN
 # =========================
 @app.route("/admin/login", methods=["POST"])
 def admin_login():
+    
     username = request.form.get("username")
     password = request.form.get("password")
-
+    
     db = get_db()
 
     admin = db.execute("""
-        SELECT * FROM admins 
-        WHERE admin_name=? AND admin_password=?
-    """, (username, password)).fetchone()
+        SELECT *
+        FROM admins
+        WHERE admin_name=?
+    """,
+    (username,)
+    ).fetchone()
 
-    if admin:
+    if admin and check_password_hash(
+        admin["admin_password"],
+        password
+    ):
+
         session["admin"] = True
         session["admin_name"] = username
-        return redirect(url_for("admin_dashboard"))
 
+        return redirect(
+            url_for("admin_dashboard")
+        )
+        
     return "Login Failed ❌"
-
 
 @app.route("/admin/dashboard")
 def admin_dashboard():
     if not session.get("admin"):
         return redirect("/")
-
     return render_template("admin/dashboard.html")
 
 
@@ -236,7 +250,6 @@ def admin_dashboard():
 def admin_logout():
     session.clear()
     return redirect("/")
-
 
 # =========================
 # ADMIN ADOPTION REVIEW
@@ -450,17 +463,34 @@ def admins():
 
 @app.route("/admin/admins/add", methods=["POST"])
 def add_admin():
+
     data = request.form
+
     db = get_db()
+
     try:
+        password = data.get("admin_password")
+        # hash + salt
+        hashed_password = generate_password_hash(password)
+        
         db.execute("""
             INSERT INTO admins
-            (admin_name, admin_password, real_name, telephone, birthday, gender, email, profile_image, remark)
+            (
+                admin_name,
+                admin_password,
+                real_name,
+                telephone,
+                birthday,
+                gender,
+                email,
+                profile_image,
+                remark
+            )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-
-        """, (
+        """,
+        (
             data.get("admin_name"),
-            data.get("admin_password"),
+            hashed_password,
             data.get("real_name"),
             data.get("telephone"),
             data.get("birthday"),
@@ -469,21 +499,43 @@ def add_admin():
             data.get("profile_image"),
             data.get("remark")
         ))
+
         db.commit()
+        
         return api_response(
-            True, "Admin created successfully")
+            True,
+            "Admin created successfully"
+        )
+
     except Exception as e:
+
         return api_response(
             False,
             str(e),
             status=500
         )
-        
+    
 @app.route("/admin/admins/update/<int:id>", methods=["POST"])
 def update_admin(id):
+
     data = request.form
     db = get_db()
+
     try:
+        new_password = data.get("admin_password")
+        if new_password:
+            hashed_password = generate_password_hash(
+                new_password
+            )
+        else:
+            old_admin = db.execute("""
+                SELECT admin_password
+                FROM admins
+                WHERE id=?
+            """,
+            (id,)
+            ).fetchone()
+            hashed_password = old_admin["admin_password"]
 
         db.execute("""
             UPDATE admins SET
@@ -496,12 +548,12 @@ def update_admin(id):
             email=?,
             profile_image=?,
             remark=?
-
+            
             WHERE id=?
-
-        """, (
+        """,
+        (
             data.get("admin_name"),
-            data.get("admin_password"),
+            hashed_password,
             data.get("real_name"),
             data.get("telephone"),
             data.get("birthday"),
@@ -510,10 +562,9 @@ def update_admin(id):
             data.get("profile_image"),
             data.get("remark"),
             id
-
         ))
-
         db.commit()
+        
         return api_response(
             True,
             "Admin updated"
@@ -639,28 +690,63 @@ def delete_user(id):
 
 @app.route("/admin/users/update/<int:id>", methods=["POST"])
 def update_user(id):
+
     data = request.form
+
     db = get_db()
 
-    db.execute("""
-        UPDATE users SET
-        username=?, password=?, sex=?, age=?, telephone=?, email=?, address=?, pic=?
-        WHERE id=?
-    """, (
-        data["username"],
-        data["password"],
-        data["sex"],
-        data["age"],
-        data["telephone"],
-        data["email"],
-        data["address"],
-        data["pic"],
-        id
-    ))
+    try:
+        password = data.get("password")
+        
+        if password:
+            hashed_password = generate_password_hash(
+                password
+            )
+        else:
+            old_user = db.execute("""
+                SELECT password
+                FROM users
+                WHERE id=?
+            """,
+            (id,)
+            ).fetchone()
+            hashed_password = old_user["password"]
+            
+        db.execute("""
+            UPDATE users SET
+            username=?,
+            password=?,
+            sex=?,
+            age=?,
+            telephone=?,
+            email=?,
+            address=?,
+            pic=?
+            WHERE id=?
+        """,
+        (
+            data["username"],
+            hashed_password,
+            data["sex"],
+            data["age"],
+            data["telephone"],
+            data["email"],
+            data["address"],
+            data["pic"],
+            id
+        ))
+        db.commit()
 
-    db.commit()
-    return jsonify(success=True, msg="Updated")
+        return jsonify(
+            success=True,
+            msg="Updated"
+        )
 
+    except Exception as e:
+        return jsonify(
+            success=False,
+            msg=str(e)
+        )
 
 # =========================
 # PETS CRUD
