@@ -1,0 +1,202 @@
+import sqlite3
+from pathlib import Path
+from werkzeug.security import generate_password_hash
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+DATABASE_PATH = BASE_DIR / "instance" / "pet_adoption.db"
+
+
+
+def create_demo_data():
+
+    db = sqlite3.connect(DATABASE_PATH)
+
+
+    # Demo user
+    user_password = generate_password_hash(
+        "User123"
+    )
+
+
+    db.execute("""
+        INSERT INTO users
+        (
+            username,
+            password,
+            sex,
+            age,
+            telephone,
+            email,
+            address,
+            pic,
+            state
+        )
+
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+
+    """,
+    (
+        "demo_user",
+        user_password,
+        "Female",
+        22,
+        "0400000000",
+        "demo_user@example.com",
+        "Perth WA",
+        "user1.jpg",
+        0
+    ))
+
+
+
+    # Demo admin
+
+    admin_password = generate_password_hash(
+        "Admin123"
+    )
+
+
+    db.execute("""
+        INSERT INTO admins
+        (
+            admin_name,
+            admin_password,
+            real_name,
+            telephone,
+            email,
+            birthday,
+            gender,
+            profile_image,
+            remark
+        )
+
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+
+    """,
+    (
+        "demo_admin",
+        admin_password,
+        "Demo Administrator",
+        "0499999999",
+        "demo_admin@example.com",
+        "1995-01-01",
+        "Female",
+        "admin1.jpg",
+        "Demo account"
+    ))
+    
+    # Demo Pets
+    pets = [
+
+    (
+        "Buddy",
+        "Dog",
+        "Male",
+        "2021-05-12",
+        "pets/Buddy.jpeg",
+        0,
+        "Friendly Golden Retriever who loves playing with people."
+    ),
+
+    (
+        "Luna",
+        "Dog",
+        "Female",
+        "2022-03-08",
+        "pets/Luna.jpg",
+        0,
+        "A gentle dog looking for a warm home."
+    ),
+
+    (
+        "Max",
+        "Dog",
+        "Male",
+        "2020-11-20",
+        "pets/Max.jpeg",
+        1,
+        "A well-trained dog that has already found a family."
+    ),
+
+    (
+        "Milo",
+        "Cat",
+        "Male",
+        "2023-01-15",
+        "pets/Milo.jpeg",
+        0,
+        "A young and energetic kitten."
+    ),
+
+    (
+        "Coco",
+        "Rabbit",
+        "Female",
+        "2022-08-30",
+        "pets/coco.webp",
+        0,
+        "A cute rabbit."
+    ),
+
+    (
+        "Charlie",
+        "Dog",
+        "Female",
+        "2019-06-18",
+        "pets/Charlie.jpeg",
+        2,
+        "Currently under adoption review."
+    ),
+
+    (
+        "Oliver",
+        "Rabbit",
+        "Male",
+        "2021-12-01",
+        "pets/Oliver.jpeg",
+        0,
+        "A lovely rabbit."
+    ),
+
+    (
+        "Nala",
+        "Cat",
+        "Female",
+        "2020-09-25",
+        "pets/nala.jpeg",
+        0,
+        "A playful cat."
+    )
+
+]
+
+    db.executemany("""
+        INSERT INTO pets
+        (
+            pet_name,
+            pet_type,
+            sex,
+            birthday,
+            pic,
+            state,
+            remark
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+
+    """, pets)
+
+
+
+    db.commit()
+
+    db.close()
+
+
+    print("Demo data created successfully")
+
+
+
+    if __name__ == "__main__":
+        create_demo_data()
