@@ -9,14 +9,13 @@
     <!-- SEARCH + ADD -->
     <div class="mb-3 d-flex gap-2">
 
-        <input class="form-control w-25" placeholder="Pet type">
-
-        <button class="btn btn-primary">Search</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchPetModal">
+            Search
+        </button>
 
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPetModal">
             Add New
         </button>
-
     </div>
 
     <!-- TABLE -->
@@ -159,6 +158,71 @@
 
 </div>
 
+<!-- SEARCH PET MODAL -->
+
+<div class="modal fade" id="searchPetModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="GET" action="/admin/pets">
+                <div class="modal-header">
+                    <h5>
+                        Search Pets
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <label>ID</label>
+                    <input class="form-control mb-2" name="id">
+                    <label>Pet Name</label>
+                    <input class="form-control mb-2" name="pet_name" placeholder="Fuzzy search">
+                    <label>Pet Type</label>
+                    <select class="form-control mb-2" name="pet_type">
+                        <option value="">
+                            All
+                        </option>
+                        <option>
+                            Dog
+                        </option>
+                        <option>
+                            Cat
+                        </option>
+                    </select>
+                    <label>Sex</label>
+                    <select class="form-control mb-2" name="sex">
+                        <option value="">
+                            All
+                        </option>
+                        <option>
+                            Male
+                        </option>
+                        <option>
+                            Female
+                        </option>
+                    </select>
+                    <label>Status</label>
+                    <select class="form-control" name="state">
+                        <option value="">
+                            All
+                        </option>
+                        <option value="0">
+                            Available
+                        </option>
+                        <option value="1">
+                            Adopted
+                        </option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button class="btn btn-primary">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <!-- ================= ADD PET MODAL ================= -->
 <div class="modal fade" id="addPetModal">
     <div class="modal-dialog modal-lg">

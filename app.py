@@ -371,7 +371,6 @@ def approved_adopt():
         rows=rows
     )
 
-
 # =========================
 # REJECTED ADOPTION LIST
 # =========================
@@ -401,15 +400,206 @@ def rejected_adopt():
     )
 
 # =========================
+# ADMINS CRUD
+# =========================
+
+@app.route("/admin/admins")
+def admins():
+    db = get_db()
+    
+    admin_id = request.args.get("id")
+    admin_name = request.args.get("admin_name")
+    gender = request.args.get("gender")
+    email = request.args.get("email")
+    telephone = request.args.get("telephone")
+    real_name = request.args.get("real_name")
+    
+    sql = """
+        SELECT *
+        FROM admins
+        WHERE 1=1
+    """
+    params = []
+    if admin_id:
+        sql += " AND id=?"
+        params.append(admin_id)
+    if admin_name:
+        sql += " AND admin_name LIKE ?"
+        params.append("%"+admin_name+"%")
+    if gender:
+        sql += " AND gender=?"
+        params.append(gender)
+    if email:
+        sql += " AND email LIKE ?"
+        params.append("%"+email+"%")
+    if telephone:
+        sql += " AND telephone LIKE ?"
+        params.append("%"+telephone+"%")
+    if real_name:
+        sql += " AND real_name LIKE ?"
+        params.append("%"+real_name+"%")
+    admins = db.execute(
+        sql,
+        params
+    ).fetchall()
+
+    return render_template(
+        "admin/admins.html",
+        admins=admins
+    )
+
+@app.route("/admin/admins/add", methods=["POST"])
+def add_admin():
+    data = request.form
+    db = get_db()
+    try:
+        db.execute("""
+            INSERT INTO admins
+            (admin_name, admin_password, real_name, telephone, birthday, gender, email, profile_image, remark)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+
+        """, (
+            data.get("admin_name"),
+            data.get("admin_password"),
+            data.get("real_name"),
+            data.get("telephone"),
+            data.get("birthday"),
+            data.get("gender"),
+            data.get("email"),
+            data.get("profile_image"),
+            data.get("remark")
+        ))
+        db.commit()
+        return api_response(
+            True, "Admin created successfully")
+    except Exception as e:
+        return api_response(
+            False,
+            str(e),
+            status=500
+        )
+        
+@app.route("/admin/admins/update/<int:id>", methods=["POST"])
+def update_admin(id):
+    data = request.form
+    db = get_db()
+    try:
+
+        db.execute("""
+            UPDATE admins SET
+            admin_name=?,
+            admin_password=?,
+            real_name=?,
+            telephone=?,
+            birthday=?,
+            gender=?,
+            email=?,
+            profile_image=?,
+            remark=?
+
+            WHERE id=?
+
+        """, (
+            data.get("admin_name"),
+            data.get("admin_password"),
+            data.get("real_name"),
+            data.get("telephone"),
+            data.get("birthday"),
+            data.get("gender"),
+            data.get("email"),
+            data.get("profile_image"),
+            data.get("remark"),
+            id
+
+        ))
+
+        db.commit()
+        return api_response(
+            True,
+            "Admin updated"
+        )
+    except Exception as e:
+
+        return api_response(
+            False,
+            str(e),
+            status=500
+        )
+        
+@app.route("/admin/admins/delete/<int:id>")
+def delete_admin(id):
+    db = get_db()
+    try:
+        db.execute("""
+            DELETE FROM admins
+            WHERE id=?
+        """, (id,))
+        db.commit()
+        return api_response(
+            True,
+            "Admin deleted"
+        )
+    except Exception as e:
+        return api_response(
+            False,
+            str(e),
+            status=500
+        )
+# =========================
 # USERS CRUD
 # =========================
 @app.route("/admin/users")
 def users():
     db = get_db()
-    users = db.execute("SELECT * FROM users").fetchall()
-    return render_template("admin/users.html", users=users)
 
+    user_id = request.args.get("id")
+    username = request.args.get("username")
+    sex = request.args.get("sex")
+    age = request.args.get("age")
+    telephone = request.args.get("telephone")
+    email = request.args.get("email")
+    address = request.args.get("address")
+    state = request.args.get("state")
 
+    sql = """
+        SELECT *
+        FROM users
+        WHERE 1=1
+    """
+    params = []
+    if user_id:
+        sql += " AND id=?"
+        params.append(user_id)
+    if username:
+        sql += " AND username LIKE ?"
+        params.append("%" + username + "%")
+    if sex:
+        sql += " AND sex=?"
+        params.append(sex)
+    if age:
+        sql += " AND age=?"
+        params.append(age)
+    if telephone:
+        sql += " AND telephone LIKE ?"
+        params.append("%" + telephone + "%")
+    if email:
+        sql += " AND email LIKE ?"
+        params.append("%" + email + "%")
+    if address:
+        sql += " AND address LIKE ?"
+        params.append("%" + address + "%")
+    if state:
+        sql += " AND state=?"
+        params.append(state)
+    users = db.execute(
+        sql,
+        params
+    ).fetchall()
+    return render_template(
+        "admin/users.html",
+        users=users
+    )
+    
 @app.route("/admin/users/add", methods=["POST"])
 def add_user():
     data = request.form
@@ -477,10 +667,51 @@ def update_user(id):
 # =========================
 @app.route("/admin/pets")
 def pets_list():
-    db = get_db()
-    pets = db.execute("SELECT * FROM pets").fetchall()
-    return render_template("admin/pets.html", pets=pets)
 
+    db = get_db()
+    
+    pet_id = request.args.get("id")
+    pet_name = request.args.get("pet_name")
+    pet_type = request.args.get("pet_type")
+    sex = request.args.get("sex")
+    state = request.args.get("state")
+
+    sql = """
+        SELECT *
+        FROM pets
+        WHERE 1=1
+    """
+    params = []
+
+    if pet_id:
+        sql += " AND id=?"
+        params.append(pet_id)
+
+    if pet_name:
+        sql += " AND pet_name LIKE ?"
+        params.append("%"+pet_name+"%")
+
+    if pet_type:
+        sql += " AND pet_type=?"
+        params.append(pet_type)
+
+    if sex:
+        sql += " AND sex=?"
+        params.append(sex)
+
+    if state:
+        sql += " AND state=?"
+        params.append(state)
+
+    pets = db.execute(
+        sql,
+        params
+    ).fetchall()
+
+    return render_template(
+        "admin/pets.html",
+        pets=pets
+    )
 
 @app.route("/admin/pets/add", methods=["POST"])
 def add_pet():
