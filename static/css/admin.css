@@ -42,3 +42,78 @@ label {
     background: #4f46e5;
     color: white;
 }
+
+.topbar {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.admin-profile {
+    position: relative;
+    margin-left: auto;
+    cursor: pointer;
+}
+
+
+.admin-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+
+/* 默认隐藏 */
+.profile-dropdown {
+
+    position: absolute;
+
+    right: 0;
+    top: 50px;
+
+    width: 120px;
+
+    background: white;
+
+    border-radius: 10px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+
+    padding: 8px;
+
+    display: none;
+
+    z-index: 2000;
+
+}
+
+
+/* 鼠标放头像显示 */
+.admin-profile:hover .profile-dropdown {
+
+    display: block;
+
+}
+
+
+.profile-dropdown a {
+
+    text-decoration: none;
+
+    color: #333;
+
+    padding: 8px 15px;
+
+    display: block;
+
+}
+
+
+.profile-dropdown a:hover {
+
+    background: #f2f2f2;
+
+}
