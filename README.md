@@ -1,4 +1,3 @@
-```markdown
 # 🐾 Pet Adoption Management System
 
 
