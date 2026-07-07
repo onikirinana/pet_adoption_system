@@ -6,6 +6,28 @@
 
     <h3>🐾 Adoption Applications</h3>
 
+    <!-- =========================
+         🔥 FILTER: APPLY TIME
+    ========================== -->
+    <form method="GET" action="/admin/adopt" class="mb-3">
+
+        <label>Apply Date:</label>
+
+        <input type="date" name="apply_time" value="{{ apply_time if apply_time else '' }}">
+
+        <button type="submit" class="btn btn-primary btn-sm">
+            Search
+        </button>
+
+        <a href="/admin/adopt" class="btn btn-secondary btn-sm">
+            Reset
+        </a>
+
+    </form>
+
+    <!-- =========================
+         TABLE
+    ========================== -->
     <table class="table table-bordered table-hover">
 
         <thead>
@@ -32,13 +54,24 @@
                 <td>{{ r.apply_time }}</td>
 
                 <td class="status-cell">
+
                     {% if r.state == 0 %}
-                    ⏳ Pending
+                    <span class="badge bg-warning text-dark">Pending</span>
+
                     {% elif r.state == 1 %}
-                    ✅ Approved
+                    <span class="badge bg-success">Approved</span>
+
+                    {% elif r.state == 2 %}
+                    <span class="badge bg-danger">Rejected</span>
+
+                    {% elif r.state == -1 %}
+                    <span class="badge bg-secondary">Deleted</span>
+
                     {% else %}
-                    ❌ Rejected
+                    <span class="badge bg-light text-dark">Unknown</span>
+
                     {% endif %}
+
                 </td>
 
                 <td>
@@ -56,6 +89,7 @@
                     </button>
 
                 </td>
+
             </tr>
             {% endfor %}
 
@@ -63,119 +97,112 @@
 
     </table>
 
+    <!-- =========================
+         🔥 PAGINATION
+    ========================== -->
+    <div style="margin-top: 20px; display:flex; gap:5px; flex-wrap:wrap;">
+
+        {% if page > 1 %}
+        <a class="btn btn-sm btn-secondary" href="/admin/adopt?page={{ page-1 }}&apply_time={{ apply_time }}">
+            Prev
+        </a>
+        {% endif %}
+
+        {% for i in range(1, total_pages + 1) %}
+
+        <a class="btn btn-sm {% if i == page %}btn-primary{% else %}btn-light{% endif %}"
+            href="/admin/adopt?page={{ i }}&apply_time={{ apply_time }}">
+            {{ i }}
+        </a>
+
+        {% endfor %}
+
+        {% if page < total_pages %} <a class="btn btn-sm btn-secondary"
+            href="/admin/adopt?page={{ page+1 }}&apply_time={{ apply_time }}">
+            Next
+            </a>
+            {% endif %}
+
+    </div>
+
 </div>
 
 <!-- ================= JS ================= -->
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 <script>
-
-    // =========================
-    // APPROVE
-    // =========================
     function approve(id) {
-        fetch(`/admin/adopt/approve/${id}`, { method: "POST" })
-            .then(res => res.json())
+        apiPost(`/admin/adopt/approve/${id}`)
             .then(data => {
-
                 showToast(data.msg, "success");
                 updateStatus(id, "Approved");
-
             })
             .catch(err => {
-                console.log(err);
-                showToast("Request failed", "error");
+                showToast(err.message, "error");
             });
     }
 
 
-    // =========================
-    // REJECT
-    // =========================
     function reject(id) {
-        fetch(`/admin/adopt/reject/${id}`, { method: "POST" })
-            .then(res => res.json())
+        apiPost(`/admin/adopt/reject/${id}`)
             .then(data => {
-
                 showToast(data.msg, "error");
                 updateStatus(id, "Rejected");
-
             })
             .catch(err => {
-                console.log(err);
-                showToast("Request failed", "error");
+                showToast(err.message, "error");
             });
     }
 
 
-    // =========================
-    // DELETE
-    // =========================
     function deleteApplication(id) {
-        fetch(`/admin/adopt/delete/${id}`, { method: "POST" })
-            .then(res => res.json())
+        apiPost(`/admin/adopt/delete/${id}`)
             .then(data => {
-
                 showToast(data.msg, "info");
 
                 const row = document.getElementById("row" + id);
-                if (row) row.remove();
-
+                if (row) {
+                    row.style.opacity = "0.4";
+                    row.style.pointerEvents = "none";
+                }
             })
             .catch(err => {
-                console.log(err);
-                showToast("Delete failed", "error");
+                showToast(err.message, "error");
             });
     }
 
-
-    // =========================
-    // UPDATE STATUS UI
-    // =========================
     function updateStatus(id, status) {
 
         const row = document.getElementById("row" + id);
         if (!row) return;
 
-        const statusCell = row.querySelector(".status-cell");
+        const cell = row.querySelector(".status-cell");
 
-        if (status === "Approved") {
-            statusCell.innerHTML = "✅ Approved";
-        }
-
-        if (status === "Rejected") {
-            statusCell.innerHTML = "❌ Rejected";
-        }
+        if (status === "Approved") cell.innerHTML = "✅ Approved";
+        if (status === "Rejected") cell.innerHTML = "❌ Rejected";
     }
 
-
-    // =========================
-    // TOAST MESSAGE
-    // =========================
     function showToast(msg, type = "info") {
 
         let color = "#333";
 
         if (type === "success") color = "green";
         if (type === "error") color = "red";
-        if (type === "info") color = "black";
 
-        const toast = document.createElement("div");
-        toast.innerText = msg;
+        const div = document.createElement("div");
+        div.innerText = msg;
 
-        toast.style.position = "fixed";
-        toast.style.bottom = "20px";
-        toast.style.right = "20px";
-        toast.style.padding = "10px 15px";
-        toast.style.background = color;
-        toast.style.color = "white";
-        toast.style.borderRadius = "6px";
-        toast.style.zIndex = "9999";
-        toast.style.fontSize = "14px";
+        div.style.position = "fixed";
+        div.style.bottom = "20px";
+        div.style.right = "20px";
+        div.style.padding = "10px 15px";
+        div.style.background = color;
+        div.style.color = "white";
+        div.style.borderRadius = "6px";
+        div.style.zIndex = "9999";
 
-        document.body.appendChild(toast);
+        document.body.appendChild(div);
 
-        setTimeout(() => {
-            toast.remove();
-        }, 2000);
+        setTimeout(() => div.remove(), 2000);
     }
 
 </script>

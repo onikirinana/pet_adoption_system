@@ -12,6 +12,13 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "instance", "pet_adoption.db")
 
 
+def api_response(success=True, msg="", data=None, status=200):
+    return jsonify({
+        "success": success,
+        "msg": msg,
+        "data": data or {}
+    }), status
+    
 def get_db():
     if "db" not in g:
         g.db = sqlite3.connect(DB_PATH)
@@ -130,6 +137,7 @@ def register_user():
     db.commit()
 
     return jsonify(success=True, msg="Register success")
+
 # =========================
 # ADOPTION APPLY PAGES
 # =========================
@@ -236,6 +244,111 @@ def admin_logout():
 @app.route("/admin/adopt")
 def admin_adopt_list():
 
+    page = request.args.get("page", 1, type=int)
+    apply_time = request.args.get("apply_time", "")
+
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    db = get_db()
+
+    # =========================
+    # SEARCH FILTER
+    # =========================
+    params = []
+    where_sql = ""
+
+    if apply_time:
+        where_sql = "WHERE date(a.apply_time) = ?"
+        params.append(apply_time)
+
+    # =========================
+    # PAGEEGATION
+    # =========================
+    total = db.execute(f"""
+        SELECT COUNT(*)
+        FROM applications a
+        {where_sql}
+    """, params).fetchone()[0]
+
+    total_pages = (total + per_page - 1) // per_page
+
+    rows = db.execute(f"""
+        SELECT 
+            a.id,
+            u.username,
+            p.pet_name,
+            a.message,
+            a.apply_time,
+            a.state
+        FROM applications a
+        JOIN users u ON a.user_id = u.id
+        JOIN pets p ON a.pet_id = p.id
+        {where_sql}
+        ORDER BY a.apply_time DESC
+        LIMIT ? OFFSET ?
+    """, params + [per_page, offset]).fetchall()
+
+    return render_template(
+        "admin/adopt.html",
+        rows=rows,
+        page=page,
+        total_pages=total_pages,
+        apply_time=apply_time
+    )
+
+@app.route("/admin/adopt/approve/<int:id>", methods=["POST"])
+def approve(id):
+
+    db = get_db()
+
+    db.execute("""
+        UPDATE applications
+        SET state = 1
+        WHERE id = ?
+    """, (id,))
+
+    db.commit()
+
+    return api_response(True, "Approved successfully")
+
+@app.route("/admin/adopt/reject/<int:id>", methods=["POST"])
+def reject(id):
+
+    db = get_db()
+
+    db.execute("""
+        UPDATE applications
+        SET state = 2
+        WHERE id = ?
+    """, (id,))
+
+    db.commit()
+
+    return api_response(True, "Rejected successfully")
+
+
+@app.route("/admin/adopt/delete/<int:id>", methods=["POST"])
+def delete(id):
+
+    db = get_db()
+
+    db.execute("""
+        UPDATE applications
+        SET state = -1
+        WHERE id = ?
+    """, (id,))
+
+    db.commit()
+
+    return api_response(True, "Deleted successfully")
+
+# =========================
+# APPROVED ADOPTION LIST
+# =========================
+@app.route("/admin/adopt/approved")
+def approved_adopt():
+
     db = get_db()
 
     rows = db.execute("""
@@ -249,35 +362,43 @@ def admin_adopt_list():
         FROM applications a
         JOIN users u ON a.user_id = u.id
         JOIN pets p ON a.pet_id = p.id
+        WHERE a.state = 1
         ORDER BY a.apply_time DESC
     """).fetchall()
 
-    return render_template("admin/adopt.html", rows=rows)
+    return render_template(
+        "admin/approved.html",
+        rows=rows
+    )
 
 
-@app.route("/admin/adopt/approve/<int:id>", methods=["POST"])
-def approve_adopt(id):
+# =========================
+# REJECTED ADOPTION LIST
+# =========================
+@app.route("/admin/adopt/rejected")
+def rejected_adopt():
+
     db = get_db()
-    db.execute("UPDATE applications SET state=1 WHERE id=?", (id,))
-    db.commit()
-    return jsonify(success=True, msg="Approved")
 
+    rows = db.execute("""
+        SELECT 
+            a.id,
+            u.username,
+            p.pet_name,
+            a.message,
+            a.apply_time,
+            a.state
+        FROM applications a
+        JOIN users u ON a.user_id = u.id
+        JOIN pets p ON a.pet_id = p.id
+        WHERE a.state = 2
+        ORDER BY a.apply_time DESC
+    """).fetchall()
 
-@app.route("/admin/adopt/reject/<int:id>", methods=["POST"])
-def reject_adopt(id):
-    db = get_db()
-    db.execute("UPDATE applications SET state=2 WHERE id=?", (id,))
-    db.commit()
-    return jsonify(success=True, msg="Rejected")
-
-
-@app.route("/admin/adopt/delete/<int:id>", methods=["POST"])
-def delete_adopt(id):
-    db = get_db()
-    db.execute("DELETE FROM applications WHERE id=?", (id,))
-    db.commit()
-    return jsonify(success=True, msg="Deleted")
-
+    return render_template(
+        "admin/rejected.html",
+        rows=rows
+    )
 
 # =========================
 # USERS CRUD
