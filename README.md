@@ -1,511 +1,706 @@
-
+```markdown
 # 🐾 Pet Adoption Management System
 
-A full-stack web-based **Pet Adoption Management System** designed to connect users with adoptable pets and provide administrators with a complete management platform for handling users, pets, administrators, and adoption applications.
 
-The system allows users to register accounts, browse available pets, submit adoption applications, and track adoption progress. Administrators can manage the entire platform through an integrated dashboard, including user management, pet management, administrator management, and adoption application review.
+A full-stack web-based **Pet Adoption Management System** designed to provide an efficient platform for users to discover pets, submit adoption applications, and allow administrators to manage the entire adoption workflow.
 
-The project is developed using **Flask**, **SQLite**, **HTML/CSS**, **JavaScript**, and **Bootstrap**, following a client-server web application architecture.
+The system enables users to:
+
+- Register and login securely
+- Browse available pets
+- View pet care information
+- Submit adoption applications
+- Track adoption progress
+
+Administrators can manage:
+
+- Users
+- Administrators
+- Pets
+- Adoption applications
+
+
+The project is developed using:
+
+- Python Flask
+- SQLite
+- HTML5
+- CSS3
+- JavaScript
+- Bootstrap
+
+
+The system follows a Flask MVC-style architecture with a relational database design.
+
 
 ---
 
 # 📌 Project Overview
 
+
 ## Background
 
-Pet adoption platforms require an efficient way to manage pet information, user applications, and adoption workflows.
 
-Traditional adoption processes often rely on manual communication, which can lead to:
+Pet adoption organizations require an efficient system to manage:
 
-* Difficult application tracking
-* Poor information management
-* Slow approval processes
-* Lack of transparency between users and organizations
+- Pet information
+- User applications
+- Adoption decisions
+- User records
+- Administrative operations
+
+
+Traditional adoption processes may cause:
+
+- Difficult application tracking
+- Inefficient communication
+- Poor data management
+- Lack of transparency
+
 
 This project provides a digital adoption management solution where:
 
-* Users can easily discover pets and apply for adoption.
-* Administrators can efficiently manage adoption requests.
-* The system maintains structured records of users, pets, and applications.
+- Users can easily find suitable pets.
+- Users can submit adoption requests online.
+- Administrators can review and manage applications.
+- All information is stored systematically in a database.
+
 
 ---
 
 # 🎯 Project Objectives
 
-The main objectives of this system are:
 
-1. Provide an online platform for pet adoption.
-2. Allow users to create accounts and manage personal information.
-3. Provide administrators with a centralized management dashboard.
-4. Implement a complete adoption approval workflow.
-5. Provide efficient searching and filtering functions for management data.
-6. Maintain consistent data storage using a relational database.
+The objectives of this project are:
+
+
+1. Build an online pet adoption platform.
+
+2. Provide secure user authentication.
+
+3. Implement administrator management functions.
+
+4. Create a complete adoption approval workflow.
+
+5. Provide advanced searching functions.
+
+6. Maintain structured database management.
+
+7. Improve efficiency of adoption organizations.
+
 
 ---
 
 # 👥 User Roles
 
-The system contains two main types of users:
 
----
+The system contains two main roles:
+
 
 # 1. Normal User
 
+
 Normal users can:
 
-* Register an account
-* Login/logout
-* Browse pets
-* View pet care information
-* Submit adoption applications
-* Track adoption status
+
+- Register an account
+- Login/logout
+- Browse pets
+- View pet care knowledge
+- Submit adoption applications
+- Track application status
+
 
 User workflow:
 
 ```
+
 Register
-   |
-   ↓
+
+↓
+
 Login
-   |
-   ↓
+
+↓
+
 Browse Pets
-   |
-   ↓
+
+↓
+
 Submit Adoption Application
-   |
-   ↓
-Wait for Admin Review
-   |
-   ↓
+
+↓
+
+Admin Review
+
+↓
+
 Approved / Rejected
+
 ```
+
 
 ---
 
 # 2. Administrator
 
-Administrators manage the entire system.
 
-Admin functions include:
+Administrators manage the entire platform.
 
-* Dashboard overview
-* User management
-* Administrator management
-* Pet management
-* Adoption application management
+
+Admin functions:
+
+
+- Dashboard overview
+- User management
+- Administrator management
+- Pet management
+- Adoption application management
+
 
 Admin workflow:
 
 ```
+
 Admin Login
-      |
-      ↓
-Dashboard
-      |
-      ↓
-Manage System Data
-      |
-      ↓
-Review Adoption Applications
-      |
-      ↓
-Approve / Reject Applications
+
 ```
+  ↓
+```
+
+Dashboard
+
+```
+  ↓
+```
+
+Manage System Data
+
+```
+  ↓
+```
+
+Review Adoption Applications
+
+```
+  ↓
+```
+
+Approve / Reject
+
+```
+
 
 ---
 
 # ✨ Main Features
 
+
 # User Side Features
 
----
 
 ## 1. User Registration
 
-Users can create new accounts by providing:
 
-* Username
-* Password
-* Gender
-* Age
-* Telephone
-* Email
-* Address
-* Profile picture
+Users can create accounts with:
 
-Registration process:
+
+- Username
+- Password
+- Gender
+- Age
+- Telephone
+- Email
+- Address
+- Profile picture
+
+
+The system validates:
+
+- Duplicate username
+- Duplicate email
+
+
+---
+
+# 2. Secure Authentication
+
+
+The system uses password hashing for security.
+
+
+Password storage:
 
 ```
-Input information
-        |
-        ↓
-Validate data
-        |
-        ↓
-Store into database
-        |
-        ↓
-Login available
+
+Plain Password
+
+```
+    ↓
 ```
 
-The system prevents duplicate accounts using database validation.
+generate_password_hash()
+
+```
+    ↓
+```
+
+Encrypted Hash
+
+```
+    ↓
+```
+
+Database
+
+```
+
+
+Password verification:
+
+```
+
+User Input Password
+
+```
+    ↓
+```
+
+check_password_hash()
+
+```
+    ↓
+```
+
+Login Success / Failed
+
+```
+
+
+Passwords are never stored as plain text.
+
+
+Authentication includes:
+
+
+- Login
+- Logout
+- Session management
+- User avatar display
+
 
 ---
 
-## 2. User Authentication
+# 3. Pet Browsing
 
-The system provides:
 
-* Login
-* Logout
-* Session management
+Users can view:
 
-After successful login:
 
-* User session is created.
-* Navigation bar updates automatically.
-* User avatar is displayed.
+- Pet image
+- Pet name
+- Pet type
+- Gender
+- Birthday
+- Description
+- Adoption status
 
----
 
-## 3. Pet Browsing
+Pet images are stored in:
 
-Users can browse pet information including:
 
-* Pet name
-* Type
-* Gender
-* Age
-* Description
-* Adoption status
+```
 
----
+static/pets/
 
-## 4. Pet Care Knowledge
+```
 
-The system provides educational information about pet care.
 
-Users can learn:
+The database stores image paths:
 
-* Feeding information
-* Daily care requirements
-* Basic pet knowledge
+Example:
+
+```
+
+pets/buddy.jpg
+
+```
+
 
 ---
 
-## 5. Adoption Application
+# 4. Pet Care Knowledge
+
+
+Users can access pet care information including:
+
+
+- Feeding knowledge
+- Daily care
+- Basic pet requirements
+
+
+---
+
+# 5. Adoption Application
+
 
 Users can submit adoption requests.
 
+
 Each application contains:
 
-| Field      | Description               |
-| ---------- | ------------------------- |
-| User       | Applicant information     |
-| Pet        | Selected pet              |
-| Message    | Adoption reason           |
-| Apply Time | Submission time           |
-| Status     | Current application state |
 
----
+| Field | Description |
+|---|---|
+| User | Applicant information |
+| Pet | Selected pet |
+| Message | Adoption reason |
+| Apply Time | Submission time |
+| Status | Application status |
 
-Application status:
 
-| Status   | Meaning            |
-| -------- | ------------------ |
-| Pending  | Waiting for review |
-| Approved | Adoption accepted  |
-| Rejected | Adoption declined  |
+Application workflow:
 
-Workflow:
 
 ```
+
 User submits application
 
-        ↓
+```
+    ↓
+```
 
 Pending
 
-        ↓
+```
+    ↓
+```
 
-Admin review
+Admin Review
 
-        ↓
+```
+    ↓
+```
 
 Approved / Rejected
+
 ```
+
+
+Application states:
+
+
+| State | Meaning |
+|---|---|
+| 0 | Pending |
+| 1 | Approved |
+| 2 | Rejected |
+| -1 | Deleted |
+
 
 ---
 
-# Admin Dashboard Features
+# 🖥 Admin Dashboard Features
 
-The administrator dashboard provides a centralized control panel.
+
+The administrator dashboard provides centralized management.
+
+
+Dashboard modules:
+
+
+```
+
+Dashboard
+
+|
+|-- User Management
+|
+|-- Admin Management
+|
+|-- Pet Management
+|
+|-- Adoption Management
+
+```
+
 
 ---
 
-# 1. Dashboard
+# 1. User Management
 
-The dashboard provides access to:
-
-* User management
-* Admin management
-* Pet management
-* Adoption management
-
-Layout:
-
-```
---------------------------------
-Sidebar       Dashboard Content
---------------------------------
-Users
-Admins
-Pets
-Adoptions
---------------------------------
-```
-
----
-
-# 2. User Management
 
 Administrators can:
 
+
 ## CRUD Operations
+
 
 ### Create
 
-Add new users.
+Add users.
+
 
 ### Read
 
-View all registered users.
+View user information.
+
 
 ### Update
 
 Modify user information.
 
+
 ### Delete
 
-Remove user accounts.
+Remove users.
+
+
 
 ---
 
 ## Advanced User Search
 
-The system supports multi-condition searching.
+
+The system supports multiple conditions.
+
 
 Search fields:
 
-| Field     | Method       |
-| --------- | ------------ |
-| ID        | Exact match  |
-| Username  | Fuzzy search |
-| Gender    | Exact match  |
-| Age       | Exact match  |
+
+| Field | Method |
+|-|-|
+| ID | Exact match |
+| Username | Fuzzy search |
+| Gender | Exact match |
+| Age | Exact match |
 | Telephone | Fuzzy search |
-| Email     | Fuzzy search |
-| Address   | Fuzzy search |
-| Status    | Exact match  |
+| Email | Fuzzy search |
+| Address | Fuzzy search |
+| Status | Exact match |
+
+
 
 Example:
 
-Search:
+
+Input:
 
 ```
-Username: Tom
-Gender: Male
+
+Username:
+Tom
+
+Gender:
+Male
+
 ```
 
-SQL condition:
+
+SQL logic:
+
 
 ```
+
 username LIKE '%Tom%'
 AND gender='Male'
+
 ```
+
 
 Result:
 
+
 ```
+
 Tom
 Tommy
+
 ```
 
----
-
-# 3. Administrator Management
-
-Administrators can manage administrator accounts.
-
-Functions:
-
-* Add administrator
-* Update administrator
-* Delete administrator
-* Search administrator
-
-Search supports:
-
-* ID
-* Admin name
-* Real name
-* Gender
-* Email
-* Telephone
 
 ---
 
-# 4. Pet Management
+# 2. Administrator Management
 
-Administrators can manage pet records.
-
-Functions:
-
-* Add pets
-* Edit pets
-* Delete pets
-* Search pets
-
-Search fields:
-
-| Field    | Method |
-| -------- | ------ |
-| ID       | Exact  |
-| Pet name | Fuzzy  |
-| Type     | Exact  |
-| Gender   | Exact  |
-| Status   | Exact  |
-
----
-
-# 5. Adoption Management
-
-This is the core workflow of the system.
 
 Administrators can:
 
-* View adoption requests
-* Approve requests
-* Reject requests
-* Delete requests
 
-Application states:
+- Add administrators
+- Update administrators
+- Delete administrators
+- Search administrators
 
-```
-0 → Pending
 
-1 → Approved
+Search supports:
 
-2 → Rejected
 
--1 → Deleted
-```
+- ID
+- Admin name
+- Real name
+- Gender
+- Email
+- Telephone
 
----
 
-## Approved Applications
+Admin passwords are also stored using password hashing.
 
-After approval:
-
-```
-Pending Application
-
-        ↓
-
-Approve Button
-
-        ↓
-
-state = 1
-
-        ↓
-
-Approved Adoption Page
-```
 
 ---
 
-## Rejected Applications
+# 3. Pet Management
 
-After rejection:
+
+Administrators can:
+
+
+- Add pets
+- Edit pets
+- Delete pets
+- Search pets
+
+
+Pet search supports:
+
+
+| Field | Method |
+|-|-|
+| ID | Exact |
+| Pet name | Fuzzy |
+| Pet type | Exact |
+| Gender | Exact |
+| Status | Exact |
+
+
+---
+
+# 4. Adoption Management
+
+
+Administrators can:
+
+
+- View adoption requests
+- Approve requests
+- Reject requests
+- Delete applications
+
+
+Workflow:
+
 
 ```
+
 Pending Application
 
-        ↓
-
-Reject Button
-
-        ↓
-
-state = 2
-
-        ↓
-
-Rejected Adoption Page
 ```
+    ↓
+```
+
+Approve
+
+```
+    ↓
+```
+
+Approved Applications
+
+Pending Application
+
+```
+    ↓
+```
+
+Reject
+
+```
+    ↓
+```
+
+Rejected Applications
+
+```
+
 
 ---
 
 # 🏗 System Architecture
 
+
 The project follows a Flask MVC-style structure.
 
+
 ```
+
 Browser
 
-   |
-   |
+```
+|
+```
 
 HTML Templates
 (Jinja2)
 
-   |
-   |
+```
+|
+```
 
 Flask Routes
 
-   |
-   |
+```
+|
+```
 
 Database Layer
 
-   |
-   |
+```
+|
+```
 
 SQLite Database
+
 ```
+
 
 ---
 
 # 🛠 Technology Stack
 
+
 ## Backend
 
-| Technology | Purpose              |
-| ---------- | -------------------- |
-| Python     | Programming language |
-| Flask      | Web framework        |
-| SQLite     | Database             |
-| Jinja2     | Template rendering   |
+
+| Technology | Purpose |
+|-|-|
+| Python | Programming language |
+| Flask | Web framework |
+| SQLite | Database |
+| Jinja2 | Template engine |
+| Werkzeug Security | Password hashing |
+
 
 ---
 
 ## Frontend
 
-| Technology | Purpose             |
-| ---------- | ------------------- |
-| HTML5      | Page structure      |
-| CSS3       | Styling             |
+
+| Technology | Purpose |
+|-|-|
+| HTML5 | Page structure |
+| CSS3 | Styling |
 | JavaScript | Dynamic interaction |
-| Bootstrap  | UI components       |
+| Bootstrap | UI components |
+
 
 ---
 
 # 📂 Project Structure
 
+
 ```
+
 Pet_Adoption_System
 
 │
@@ -514,7 +709,17 @@ Pet_Adoption_System
 ├── requirements.txt
 │
 ├── database
+│   │
+│   ├── schema.sql
+│   │
+│   ├── init_db.py
+│   │
+│   └── create_demo_data.py
+│
+│
+├── instance
 │   └── pet_adoption.db
+│
 │
 ├── templates
 │
@@ -522,7 +727,7 @@ Pet_Adoption_System
 │   ├── index.html
 │   ├── login.html
 │   ├── register.html
-│
+│   │
 │   └── admin
 │       ├── layout.html
 │       ├── dashboard.html
@@ -535,29 +740,43 @@ Pet_Adoption_System
 │
 │
 └── static
+│
+├── css
+│
+├── js
+│
+└── pets
+├── buddy.jpg
+├── luna.jpg
+├── max.jpg
+├── milo.jpg
+├── coco.jpg
+├── charlie.jpg
+├── oliver.jpg
+└── nala.jpg
 
-    ├── css
-    │   ├── style.css
-    │   └── admin.css
-    │
-    └── js
 ```
+
 
 ---
 
 # 🗄 Database Design
 
-The system uses SQLite.
 
----
+The system uses SQLite database.
 
-## Users Table
+
+Main tables:
+
+
+## Users
+
 
 Stores registered users.
 
-Example:
 
 ```
+
 users
 
 id
@@ -569,58 +788,71 @@ telephone
 email
 address
 pic
+state
+
 ```
+
 
 ---
 
-## Admins Table
+## Admins
+
 
 Stores administrator accounts.
 
-Example:
 
 ```
+
 admins
 
 id
 admin_name
-password
+admin_password
 real_name
 telephone
 email
+birthday
 gender
 profile_image
+remark
+
 ```
+
 
 ---
 
-## Pets Table
+## Pets
+
 
 Stores pet information.
 
-Example:
 
 ```
+
 pets
 
 id
 pet_name
 pet_type
 sex
-age
-description
-status
+birthday
+pic
+state
+remark
+
 ```
+
 
 ---
 
-## Applications Table
+## Applications
+
 
 Stores adoption applications.
 
-Example:
 
 ```
+
 applications
 
 id
@@ -629,43 +861,54 @@ pet_id
 message
 apply_time
 state
+
 ```
+
 
 Relationship:
 
+
 ```
+
 User
 
- 1
- |
- |
- *
+1
+|
+|
+*
 
 Applications
 
- *
- |
- |
- 1
+*
+
+|
+
+|
+
+1
 
 Pet
-```
+
+````
+
 
 ---
 
 # 🚀 Installation Guide
 
-## Clone Project
+
+## 1. Clone Repository
+
 
 ```bash
 git clone <repository-url>
 
 cd pet_adoption_system
-```
+````
 
 ---
 
-## Create Virtual Environment
+## 2. Create Virtual Environment
 
 ```bash
 python3 -m venv venv
@@ -687,7 +930,7 @@ venv\Scripts\activate
 
 ---
 
-## Install Dependencies
+## 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -695,7 +938,29 @@ pip install -r requirements.txt
 
 ---
 
-## Run Application
+# 4. Initialize Database
+
+Create database:
+
+```bash
+python database/init_db.py
+```
+
+Generate demo data:
+
+```bash
+python database/create_demo_data.py
+```
+
+This will create:
+
+* Demo users
+* Demo administrators
+* Sample pets
+
+---
+
+# 5. Run Application
 
 ```bash
 python app.py
@@ -705,6 +970,40 @@ Open:
 
 ```
 http://127.0.0.1:5001
+```
+
+---
+
+# 🔑 Demo Accounts
+
+## Admin Account
+
+```
+Username:
+demo_admin
+
+
+Password:
+Admin123
+```
+
+Admin URL:
+
+```
+/admin/login
+```
+
+---
+
+## User Account
+
+```
+Username:
+demo_user
+
+
+Password:
+User123
 ```
 
 ---
@@ -720,7 +1019,9 @@ Add pagination for:
 * Users
 * Admins
 * Pets
-* Adoption records
+* Adoption applications
+
+---
 
 ## 2. Email Notification
 
@@ -730,40 +1031,59 @@ Notify users when:
 * Application approved
 * Application rejected
 
-## 3. Image Upload
+---
 
-Replace image URL input with:
+## 3. Image Upload System
+
+Replace image filename input with:
 
 * File upload
 * Cloud storage
 
-## 4. Permission System
+---
 
-Support multiple admin roles:
+## 4. Permission Management
+
+Support multiple administrator roles:
 
 * Super Admin
 * Manager
 * Reviewer
 
+---
+
 ## 5. Deployment
 
-Deploy system using:
+Deploy using:
 
 * Docker
-* Cloud server
+* Cloud hosting
 * Production database
 
 ---
 
-# 👨‍💻 Development
+# 👨‍💻 Development Skills Demonstrated
 
 This project demonstrates:
 
 * Full-stack web development
+* Flask application design
 * Database design
 * CRUD operations
-* Authentication
+* Authentication system
+* Password security
 * Session management
 * AJAX interaction
-* Dynamic searching
-* Admin dashboard design
+* Advanced searching
+* Admin dashboard development
+* Relational database management
+
+---
+
+# License
+
+This project is developed for educational and portfolio purposes.
+
+```
+
+---
