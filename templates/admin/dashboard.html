@@ -19,6 +19,20 @@
 
         <div class="topbar">
             Welcome, Admin 👋
+            <div class="admin-user-box">
+
+                <img src="https://ui-avatars.com/api/?name={{ session.get('admin_name') }}" class="admin-avatar">
+
+                <span>
+                    {{ session.get('admin_name') }}
+                </span>
+
+
+                <a href="{{ url_for('admin_logout') }}">
+                    Logout
+                </a>
+
+            </div>
         </div>
 
         {% block content %}{% endblock %}

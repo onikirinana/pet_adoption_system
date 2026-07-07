@@ -9,14 +9,36 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 
+
 <body>
+
 
     {% include "admin/sidebar.html" %}
 
     <div class="main">
 
         <div class="topbar">
-            Welcome, Admin 👋
+
+            <div class="welcome-text">
+                Welcome, {{ session.get('admin_name') }} 👋
+            </div>
+
+
+            <div class="admin-profile">
+
+                <img src="https://ui-avatars.com/api/?name={{ session.get('admin_name') }}" class="admin-avatar">
+
+
+                <div class="profile-dropdown">
+
+                    <a href="{{ url_for('admin_logout') }}">
+                        Logout
+                    </a>
+
+                </div>
+
+            </div>
+
         </div>
 
         {% block content %}{% endblock %}
