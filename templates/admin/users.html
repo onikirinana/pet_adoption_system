@@ -8,15 +8,13 @@
 
     <!-- SEARCH + ADD -->
     <div class="mb-3 d-flex gap-2">
-
-        <input class="form-control w-25" placeholder="Username">
-
-        <button class="btn btn-primary">Search</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchUserModal">
+            Search
+        </button>
 
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
             Add New
         </button>
-
     </div>
 
     <!-- TABLE -->
@@ -145,6 +143,88 @@
 
 </div>
 
+<!-- ================= SEARCH MODAL ================= -->
+<div class="modal fade" id="searchUserModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="GET" action="/admin/users">
+                <div class="modal-header">
+                    <h5>
+                        Search Users
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>ID</label>
+                            <input class="form-control" name="id">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Username</label>
+                            <input class="form-control" name="username" placeholder="Fuzzy search">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Sex</label>
+                            <select class="form-control" name="sex">
+                                <option value="">
+                                    All
+                                </option>
+                                <option>
+                                    Male
+                                </option>
+                                <option>
+                                    Female
+                                </option>
+                                <option>
+                                    Other
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Age</label>
+                            <input class="form-control" name="age" type="number">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Telephone</label>
+                            <input class="form-control" name="telephone">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Email</label>
+                            <input class="form-control" name="email">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label>Address</label>
+                            <input class="form-control" name="address">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Status</label>
+                            <select class="form-control" name="state">
+                                <option value="">
+                                    All
+                                </option>
+                                <option value="0">
+                                    Normal
+                                </option>
+                                <option value="1">
+                                    Disabled
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <!-- ================= ADD USER MODAL ================= -->
 <div class="modal fade" id="addUserModal">
     <div class="modal-dialog modal-lg">
@@ -204,6 +284,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- ================= JS ================= -->
 <script>

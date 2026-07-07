@@ -8,15 +8,13 @@
 
     <!-- SEARCH + ADD -->
     <div class="mb-3 d-flex gap-2">
-
-        <input type="text" class="form-control w-25" placeholder="Admin Name">
-
-        <button class="btn btn-primary">Search</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchAdminModal">
+            Search
+        </button>
 
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
             Add New
         </button>
-
     </div>
 
     <!-- TABLE -->
@@ -125,6 +123,67 @@
 
 </div>
 
+<!-- ================= SEARCH ADMIN MODAL ================= -->
+
+<div class="modal fade" id="searchAdminModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="GET" action="/admin/admins">
+                <div class="modal-header">
+                    <h5>
+                        Search Admin
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>ID</label>
+                            <input class="form-control" name="id">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Admin Name</label>
+                            <input class="form-control" name="admin_name" placeholder="Fuzzy search">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Gender</label>
+                            <select class="form-control" name="gender">
+                                <option value="">
+                                    All
+                                </option>
+                                <option>
+                                    Male
+                                </option>
+                                <option>
+                                    Female
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Email</label>
+                            <input class="form-control" name="email">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Telephone</label>
+                            <input class="form-control" name="telephone">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Real Name</label>
+                            <input class="form-control" name="real_name">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button class="btn btn-primary">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <!-- ================= ADD MODAL ================= -->
 <div class="modal fade" id="addModal">
     <div class="modal-dialog modal-lg">
